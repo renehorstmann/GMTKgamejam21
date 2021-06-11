@@ -9,6 +9,8 @@
 #include "cameractrl.h"
 #include "background.h"
 #include "pixelparticles.h"
+#include "bubbles.h"
+#include "fish.h"
 
 static void main_loop(float delta_time);
 
@@ -30,6 +32,8 @@ int main(int argc, char **argv) {
     cameractrl_init();
     background_init(1280, 1280, true, true, "res/background.png");
     pixelparticles_init();
+    bubbles_init();
+    fish_init();
 
 
     e_window_main_loop(main_loop);
@@ -50,7 +54,10 @@ static void main_loop(float delta_time) {
     cameractrl_update(delta_time);
     background_update(delta_time);
     pixelparticles_update(delta_time);
+    bubbles_update(delta_time);
+    fish_update(delta_time);
 
+    //-------------
     static float x = 500;
     if(e_input.keys.right) {
         x += 100 * delta_time;
@@ -67,7 +74,7 @@ static void main_loop(float delta_time) {
         y -= 100 * delta_time;
     }
     cameractrl.in.dst.y = y;
-
+    //---------------
 
 
     // render
@@ -75,6 +82,8 @@ static void main_loop(float delta_time) {
 
     background_render();
     pixelparticles_render();
+    fish_render();
+    bubbles_render();
 
 
     // uncomment to clone the current framebuffer into r_render.framebuffer_tex
