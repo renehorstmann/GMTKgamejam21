@@ -58,7 +58,7 @@ static void main_loop(float delta_time) {
     fish_update(delta_time);
 
     //-------------
-    static float x = 500;
+    static float x = 0;
     if(e_input.keys.right) {
         x += 100 * delta_time;
     }
@@ -66,7 +66,7 @@ static void main_loop(float delta_time) {
         x -= 100 * delta_time;
     }
     cameractrl.in.dst.x = x;
-    static float y = 500;
+    static float y = 0;
     if(e_input.keys.up) {
         y += 100 * delta_time;
     }
