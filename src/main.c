@@ -5,33 +5,19 @@
 #include "mathc/mathc.h"
 
 #include "camera.h"
-
-
-// example code:
-// 'R'ender'o'bject 
-// renders text via RoBatch
-static RoText text;
-// stores the last pressed mouse click / touch to render with RoText text
-static ePointer_s last_click;
-
-
-// will be called on mouse or touch events
-static void on_pointer_callback(ePointer_s pointer, void *ud) {
-    if (pointer.action != E_POINTER_DOWN)
-        return;
-    last_click = pointer;
-    printf("clicked at x=%f, y=%f, id=%i, is touch: %i\n", pointer.pos.x, pointer.pos.y, pointer.id, e_input.is_touch);
-}
-//
+#include "hudcamera.h"
+#include "cameractrl.h"
+#include "background.h"
+#include "pixelparticles.h"
 
 static void main_loop(float delta_time);
 
 
 int main(int argc, char **argv) {
-    log_info("some");
+    log_info("gmtkjam21");
 
     // init e (environment)
-    e_window_init("some");
+    e_window_init("gmtkjam21");
     e_input_init();
     e_gui_init();
 
@@ -40,21 +26,10 @@ int main(int argc, char **argv) {
 
     // init systems
     camera_init();
-
-
-    // example code
-    // class init of RoText
-    // RoText *self, int max_chars, const float *camera_vp_matrix
-    text = ro_text_new_font55(128, camera.gl);
-    // see u/pose.h, sets a mat4 transformation pose
-    u_pose_set_xy(&text.pose, camera_left() + 20, 0);
-
-    // setup a pointer listener
-    e_input_register_pointer_event(on_pointer_callback, NULL);
-
-    // set clear color
-    r_render.clear_color = (vec4) {0.5, 0.75, 0.5, 1};
-    //
+    hudcamera_init();
+    cameractrl_init();
+    background_init(1280, 1280, true, true, "res/background.png");
+    pixelparticles_init();
 
 
     e_window_main_loop(main_loop);
@@ -71,28 +46,39 @@ static void main_loop(float delta_time) {
 
     // simulate
     camera_update();
+    hudcamera_update();
+    cameractrl_update(delta_time);
+    background_update(delta_time);
+    pixelparticles_update(delta_time);
+
+    static float x = 500;
+    if(e_input.keys.right) {
+        x += 100 * delta_time;
+    }
+    if(e_input.keys.left) {
+        x -= 100 * delta_time;
+    }
+    cameractrl.in.dst.x = x;
+    static float y = 500;
+    if(e_input.keys.up) {
+        y += 100 * delta_time;
+    }
+    if(e_input.keys.down) {
+        y -= 100 * delta_time;
+    }
+    cameractrl.in.dst.y = y;
+
 
 
     // render
     r_render_begin_frame(e_window.size.x, e_window.size.y);
 
-
-    // example code
-    static float val = 10;
-    //creates a debug window to set val
-    // min, max, step
-    e_gui_wnd_float_attribute("val", &val, 0, 100, 5);
-    char buf[128];
-    snprintf(buf, 128, "Hello World\nval=%5.1f\nspace pressed: %i\nid=%i x=%.2f y=%.2f",
-            val, e_input.keys.space, last_click.id, last_click.pos.x, last_click.pos.y);
-    // RoText methods: set text, render
-    ro_text_set_text(&text, buf);
-    ro_text_render(&text);
-    //
+    background_render();
+    pixelparticles_render();
 
 
     // uncomment to clone the current framebuffer into r_render.framebuffer_tex
-    // r_render_blit_framebuffer(e_window.size.x, e_window.size.y);
+    r_render_blit_framebuffer(e_window.size.x, e_window.size.y);
 
     e_gui_render();
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(some C)
+project(gmtkjam21 C)
 
 # Optional definitions set:
 # OPTION_GLES           for OpenGLES3.0 instead of OpenGL3.3
@@ -32,14 +32,14 @@ file(GLOB SRCS
         "${PROJECT_SOURCE_DIR}/src/p/*"
         )
 
-add_executable(some ${SRCS})
+add_executable(gmtkjam21 ${SRCS})
 
 # Desktop or Mobile? -> GL or GLES?
 find_library(GL_LIB GL)
 find_library(GLES_LIB GLESv3)
 if (GL_LIB)
     message("GL found: Desktop mode")
-    target_link_libraries(some ${GL_LIB})
+    target_link_libraries(gmtkjam21 ${GL_LIB})
 elseif (GLES_LIB)
     message("GLES found: Mobile mode")
     add_definitions(-DOPTION_GLES)
@@ -48,7 +48,7 @@ elseif (GLES_LIB)
     add_definitions(-DMATHC_NO_PRINT_COLOR)
     add_definitions(-DNUKLEAR_SCALE=3.0)
     add_definitions(-DRHC_LOG_DO_NOT_PRINT_TIME_FILE)
-    target_link_libraries(some ${GLES_LIB})
+    target_link_libraries(gmtkjam21 ${GLES_LIB})
 else ()
     message(FATAL_ERROR "Neither GL nor GLESv3 found, exiting CMake")
 endif ()
@@ -57,7 +57,7 @@ endif ()
 find_library(GLEW_LIB GLEW)
 if (GLEW_LIB)
     add_definitions(-DOPTION_GLEW)
-    target_link_libraries(some ${GLEW_LIB})
+    target_link_libraries(gmtkjam21 ${GLEW_LIB})
 endif ()
 
 # SDL
@@ -72,7 +72,7 @@ else ()
 endif ()
 include_directories(${SDL2_INCLUDE_DIRS})
 message("include dir:" ${SDL2_INCLUDE_DIRS})
-target_link_libraries(some m
+target_link_libraries(gmtkjam21 m
         ${SDL2_LIBRARIES}
         ${SDL2_IMAGE_LIBRARIES}
         ${SDL2_TTF_LIBRARIES}
