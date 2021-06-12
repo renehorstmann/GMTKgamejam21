@@ -226,7 +226,7 @@ void fish_init() {
         L.fish[i].pos = random_euler_pos(SWARM_NEAR/2, SWARM_RADIUS/2);
     }
     for(int i=start_fishs; i<FISH_MAX; i++) {
-        L.fish[i].pos = random_euler_pos(96, 256);
+        L.fish[i].pos = random_euler_pos(128, 512);
     }
 
     ro_batch_update(&L.ro);
