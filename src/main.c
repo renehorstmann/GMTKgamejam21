@@ -58,7 +58,7 @@ static void main_loop(float delta_time) {
     fish_update(delta_time);
 
     // scripts
-//    cameractrl.in.dst = fish_swarm_center();
+    cameractrl.in.dst = fish_swarm_center();
 //    vec2_println(cameractrl.in.dst);
 
 
