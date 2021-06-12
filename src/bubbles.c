@@ -6,7 +6,7 @@
 #include "hudcamera.h"
 #include "bubbles.h"
 
-#define MAX_TIME 32.0
+#define MAX_TIME 48.0
 
 static struct {
    RoParticleRefract ro;

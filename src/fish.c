@@ -30,8 +30,8 @@ void fish_init() {
 
     for(int i=0; i<L.ro.num; i++) {
         L.ro.rects[i].pose = u_pose_new(
-                sca_random_noise(0, 256),
-                sca_random_noise(0, 256),
+                sca_random_noise(0, 90),
+                sca_random_noise(0, 90),
                 32, 32
                 );
         vec3 hsv = {{
