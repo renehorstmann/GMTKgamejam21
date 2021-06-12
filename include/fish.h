@@ -3,13 +3,15 @@
 
 #include "mathc/types/float.h"
 
-#define FISH_MAX 12
+#define FISH_MAX 128
 
 void fish_init();
 
 void fish_update(float dtime);
 
 void fish_render();
+
+int fish_swarm_size();
 
 vec2 fish_swarm_center();
 
