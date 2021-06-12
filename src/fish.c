@@ -1,3 +1,4 @@
+#include <time.h>   //srand(time(NULL))
 #include "e/input.h"
 #include "r/ro_single.h"
 #include "r/ro_batch.h"
@@ -198,6 +199,8 @@ static void swarm_code(int fish_idx) {
 void fish_init() {
     L.move.active = -1;
 
+    srand(time(NULL));
+
     e_input_register_pointer_event(pointer_callback, NULL);
 
 
@@ -220,13 +223,25 @@ void fish_init() {
         L.ro.rects[i].pose = u_pose_new(0, 0, 32, 32);
     }
 
-    const int start_fishs = 1;
-    for(int i=0; i<start_fishs; i++) {
-        L.fish[i].swarmed = true;
-        L.fish[i].pos = random_euler_pos(SWARM_NEAR/2, SWARM_RADIUS/2);
-    }
-    for(int i=start_fishs; i<FISH_MAX; i++) {
-        L.fish[i].pos = random_euler_pos(128, 512);
+    // init fish start positions
+    {
+        int idx = 0;
+
+        // center fish to start the swarm
+        for (int i = 0; i < 1; i++, idx++) {
+            L.fish[idx].swarmed = true;
+            L.fish[idx].pos = vec2_set(0);
+        }
+
+        // definitely in the start camera quad
+        for (int i = 0; i < 3; i++, idx++) {
+            L.fish[idx].pos = random_euler_pos(128, CAMERA_SIZE/2);
+        }
+
+        // remaining
+        for (;idx<FISH_MAX; idx++) {
+            L.fish[idx].pos = random_euler_pos(CAMERA_SIZE*3/4, CAMERA_SIZE*2);
+        }
     }
 
     ro_batch_update(&L.ro);
