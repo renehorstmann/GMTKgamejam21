@@ -11,6 +11,7 @@
 #include "pixelparticles.h"
 #include "bubbles.h"
 #include "fish.h"
+#include "spawn.h"
 
 static void main_loop(float delta_time);
 
@@ -34,6 +35,7 @@ int main(int argc, char **argv) {
     pixelparticles_init();
     bubbles_init();
     fish_init();
+    spawn_init();
 
 
     e_window_main_loop(main_loop);
@@ -48,6 +50,8 @@ static void main_loop(float delta_time) {
     // e updates
     e_input_update();
 
+//    delta_time*=10;
+
     // simulate
     camera_update();
     hudcamera_update();
@@ -56,6 +60,7 @@ static void main_loop(float delta_time) {
     pixelparticles_update(delta_time);
     bubbles_update(delta_time);
     fish_update(delta_time);
+    spawn_update(delta_time);
 
     // scripts
     cameractrl.in.dst = fish_swarm_center();
