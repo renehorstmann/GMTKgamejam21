@@ -57,24 +57,10 @@ static void main_loop(float delta_time) {
     bubbles_update(delta_time);
     fish_update(delta_time);
 
-    //-------------
-    static float x = 0;
-    if(e_input.keys.right) {
-        x += 100 * delta_time;
-    }
-    if(e_input.keys.left) {
-        x -= 100 * delta_time;
-    }
-    cameractrl.in.dst.x = x;
-    static float y = 0;
-    if(e_input.keys.up) {
-        y += 100 * delta_time;
-    }
-    if(e_input.keys.down) {
-        y -= 100 * delta_time;
-    }
-    cameractrl.in.dst.y = y;
-    //---------------
+    // scripts
+    cameractrl.in.dst = fish_swarm_center();
+//    vec2_println(cameractrl.in.dst);
+
 
 
     // render

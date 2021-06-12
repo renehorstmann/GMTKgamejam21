@@ -27,7 +27,7 @@ static void apply_pos(float dtime) {
 //
 
 void cameractrl_init() {
-    cameractrl.max_diff = vec2_set(20);
+    cameractrl.max_diff = vec2_set(50);
     cameractrl.diff_offset = (vec2) {{0, 0}};
 }
 

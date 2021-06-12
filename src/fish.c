@@ -13,6 +13,7 @@
 #define FPS 6.0
 #define POINTER_DISTANCE 16.0
 #define SPEED_FACTOR 1.5
+#define MAX_SPEED 100.0
 
 static struct {
     RoBatch ro;
@@ -63,6 +64,10 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
     }
 }
 
+static void swarm_code(int fish) {
+    // todo swim to dst
+}
+
 void fish_init() {
     L.move.active = -1;
 
@@ -105,7 +110,9 @@ void fish_update(float dtime) {
         vec2 diff = vec2_sub_vec(L.move.dst, fish_pos);
         vec2 dir = vec2_normalize(diff);
         float distance = vec2_norm(diff);
-        vec2 delta = vec2_scale(dir, distance * SPEED_FACTOR * dtime);
+        float speed = distance * SPEED_FACTOR;
+        speed = sca_min(speed, MAX_SPEED);
+        vec2 delta = vec2_scale(dir, speed * dtime);
         fish_pos = vec2_add_vec(fish_pos, delta);
         u_pose_set_xy(&L.ro.rects[L.move.active].pose, fish_pos.x, fish_pos.y);
     }
@@ -114,4 +121,20 @@ void fish_update(float dtime) {
 void fish_render() {
     ro_batch_render(&L.ro);
     ro_single_render(&L.move.ring_ro);
+}
+
+vec2 fish_swarm_center() {
+    vec2 center = {{0, 0}};
+    int cnt = 0;
+    for(int i=0; i<FISH_MAX; i++) {
+        if(L.swarmed[i]) {
+            center = vec2_add_vec(center, u_pose_get_xy(L.ro.rects[i].pose));
+            cnt++;
+        }
+    }
+    if(cnt == 0) {
+        log_warn("fish_swarm_center failed, no fish in the swarm");
+        return center;
+    }
+    return vec2_div(center, cnt);
 }
