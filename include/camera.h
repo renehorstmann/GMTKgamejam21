@@ -10,7 +10,7 @@
 #include "mathc/types/float.h"
 
 
-#define CAMERA_SIZE 180 // *4=720; *6=1080; *8=1440
+#define CAMERA_SIZE 240 // *4=720; *6=1080; *8=1440
 #define CAMERA_BACKGROUNDS 6
 
 struct CameraMatrices_s {

@@ -3,7 +3,7 @@
 
 #include "mathc/types/float.h"
 
-#define FISH_MAX 128
+#define FISH_MAX 24
 
 void fish_init();
 

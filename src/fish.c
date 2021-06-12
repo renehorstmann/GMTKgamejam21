@@ -16,15 +16,17 @@
 #define MAX_SPEED 100.0
 
 #define SWARM_RADIUS 48.0
-#define SWARM_NEAR 36.0
+#define SWARM_NEAR_START 20.0
+#define SWARM_NEAR_END 30.0
 
 #define SWIM_AWAY_SPEED 5.0
-#define NEAR_SPEED_FACTOR 0.5
-#define CENTER_SPEED_FACTOR 1.0
+
 
 typedef struct {
     vec2 pos;
     vec2 speed;
+    vec2 set_speed;
+    vec2 local_speed;
     vec3 hsv;
     bool swarmed;
 } Fish_s;
@@ -128,28 +130,41 @@ static void active_code() {
 }
 
 static void swarm_code(int fish_idx) {
-    int swarm_radius_cnt = 0;
+    vec2 swarm_center_dir = {0};
+    vec2 local_center_dir = {0};
+    vec2 keep_distance_dir = {0};
+    vec2 active_dir = {0};
+
+    vec2 fish_pos = L.fish[fish_idx].pos;
+
+    int local_cnt = 0;
     int near_cnt = 0;
-    vec2 speed;
 
-    vec2 center_dir = vec2_sub_vec(L.swarm_center, L.fish[fish_idx].pos);
-    speed = vec2_scale(center_dir, CENTER_SPEED_FACTOR);
+    swarm_center_dir = vec2_sub_vec(L.swarm_center, fish_pos);
 
+    vec2 local_center = {0};
     for (int i = 0; i < FISH_MAX; i++) {
-        vec2 delta = vec2_sub_vec(L.fish[i].pos, L.fish[fish_idx].pos);
+        vec2 delta = vec2_sub_vec(L.fish[i].pos, fish_pos);
         float fish_distance = vec2_norm(delta);
         if (fish_distance <= SWARM_RADIUS) {
-            swarm_radius_cnt++;
+            local_cnt++;
+            local_center = vec2_add_vec(local_center, L.fish[i].pos);
             L.fish[i].swarmed = true;
+            if(i==L.move.active) {
+                active_dir = delta;
+            }
         }
-        if (fish_distance <= SWARM_NEAR) {
+        if (fish_distance <= SWARM_NEAR_START) {
             near_cnt++;
             vec2 dir = vec2_normalize(delta);
-            dir = vec2_scale(dir, (SWARM_NEAR - fish_distance) * NEAR_SPEED_FACTOR);
-            speed = vec2_sub_vec(speed, dir);
+            dir = vec2_scale(dir, SWARM_NEAR_END - fish_distance);
+            keep_distance_dir = vec2_sub_vec(keep_distance_dir, dir);
         }
     }
-    if (swarm_radius_cnt <= 1) {
+    local_center = vec2_div(local_center, local_cnt);
+    local_center_dir = vec2_sub_vec(local_center, fish_pos);
+
+    if (local_cnt <= 1) {
         log_trace("fish unswarmed: %i", fish_idx);
         L.fish[fish_idx].swarmed = false;
         // move the lost fish slowly away from the swam center
@@ -159,7 +174,16 @@ static void swarm_code(int fish_idx) {
         return;
     }
 
-    L.fish[fish_idx].speed = speed;
+    swarm_center_dir = vec2_normalize(swarm_center_dir);
+    local_center_dir = vec2_normalize(local_center_dir);
+    keep_distance_dir = vec2_normalize(keep_distance_dir);
+    active_dir = vec2_normalize(active_dir);
+
+    vec2 speed = vec2_scale(swarm_center_dir, 1);
+    speed = vec2_add_vec(speed, vec2_scale(local_center_dir, 10));
+    speed = vec2_add_vec(speed, vec2_scale(keep_distance_dir, 15));
+    speed = vec2_add_vec(speed, vec2_scale(active_dir, 20));
+    L.fish[fish_idx].set_speed = speed;
 }
 
 void fish_init() {
@@ -189,7 +213,7 @@ void fish_init() {
     assert(FISH_MAX>=3);
     for(int i=0; i<2; i++) {
         L.fish[i].swarmed = true;
-        L.fish[i].pos = random_euler_pos(SWARM_NEAR/2, SWARM_RADIUS/2);
+        L.fish[i].pos = random_euler_pos(SWARM_NEAR_END/2, SWARM_RADIUS/2);
     }
     for(int i=2; i<FISH_MAX; i++) {
         L.fish[i].pos = random_euler_pos(96, 256);
@@ -223,6 +247,7 @@ void fish_update(float dtime) {
     animate(dtime);
 
     for (int i = 0; i < FISH_MAX; i++) {
+        L.fish[i].speed = vec2_mix(L.fish[i].speed, L.fish[i].set_speed, 1.0*dtime);
         vec2 delta = vec2_scale(L.fish[i].speed, dtime);
         L.fish[i].pos = vec2_add_vec(L.fish[i].pos, delta);
         u_pose_set_xy(&L.ro.rects[i].pose, L.fish[i].pos.x, L.fish[i].pos.y);
