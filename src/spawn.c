@@ -4,7 +4,9 @@
 #include "rhc/log.h"
 #include "mathc/float.h"
 #include "mathc/utils/random.h"
+#include "mathc/utils/color.h"
 #include "fish.h"
+#include "feed.h"
 #include "camera.h"
 #include "cameractrl.h"
 #include "spawn.h"
@@ -22,6 +24,18 @@ static vec3 hsv_fish() {
                            0.5,
                            sca_random_range(0.75, 1.0)
                    }};
+}
+
+static vec4 color_feed() {
+    vec3 hsv = {{
+                        sca_random_range(0, 360),
+                        sca_random_range(0.75, 1.0),
+                        sca_random_range(0.5, 1.0)
+                }};
+    vec4 color;
+    color.rgb = vec3_hsv2rgb(hsv);
+    color.a = 1.0;
+    return color;
 }
 
 static vec2 random_euler_pos(float min, float max) {
@@ -49,6 +63,13 @@ static Fish_s new_fish(vec2 pos) {
     };
 }
 
+static Feed_s new_feed(vec2 pos) {
+    return (Feed_s) {
+        .pos = pos,
+        .color = color_feed()
+    };
+}
+
 static void respawn_fish() {
     log_info("respawn_fish");
     mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width()+32, camera_height()+32);
@@ -60,7 +81,6 @@ static void respawn_fish() {
             speed = vec2_normalize(speed);
             speed = vec2_scale(speed, RESPAWN_FISH_SPEED);
             fish.alone[i].pos = new_pos;
-            vec2_println(new_pos);
             fish.alone[i].speed = speed;
             fish.alone[i].set_speed = speed;
             return;
@@ -83,6 +103,12 @@ void spawn_init() {
     }
     fish.alone_size = FISH_MAX-1;
 
+
+    feed.feed[0] = new_feed(random_euler_pos(96, CAMERA_SIZE/2));
+    for (int i = 1; i < FEED_MAX; i++) {
+        feed.feed[i] = new_feed(random_euler_pos(CAMERA_SIZE*5/6, CAMERA_SIZE*2));
+    }
+    feed.feed_size = FEED_MAX;
 }
 
 
