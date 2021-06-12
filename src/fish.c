@@ -21,6 +21,7 @@
 typedef struct {
     vec2 pos;
     vec2 speed;
+    vec3 hsv;
     bool swarmed;
 } Fish_s;
 
@@ -35,22 +36,32 @@ static struct {
     } move;
 } L;
 
+static vec2 random_euler_pos(float min, float max) {
+    float angle = sca_random_range(0, 2*M_PI);
+    float distance = sca_random_range(min, max);
+    return vec2_scale((vec2) {{sca_cos(angle), sca_sin(angle)}}, distance);
+}
 
 static void animate(float dtime) {
     static float time = 0;
     time = sca_mod(time + dtime, FRAMES / FPS);
     int frame = time * FPS;
-    for(int i=0; i<L.ro.num; i++) {
+    for (int i = 0; i < FISH_MAX; i++) {
+//        if(L.fish[i].speed.x>10) {
+//            L.ro.rects[i].uv = u_pose_new(0, 0, -1, 1);
+//        } else if (L.fish[i].speed.x<-10){
+//            L.ro.rects[i].uv = u_pose_new(0, 0, 1, 1);
+//        }
         L.ro.rects[i].sprite.x = frame;
     }
 }
 
 static void pointer_callback(ePointer_s pointer, void *user_data) {
-    if(pointer.id != 0)
+    if (pointer.id != 0)
         return;
 
-    if(pointer.action == E_POINTER_UP) {
-        if(L.move.active>=0)
+    if (pointer.action == E_POINTER_UP) {
+        if (L.move.active >= 0)
             log_info("fish move end");
         L.move.active = -1;
         return;
@@ -60,11 +71,11 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
 
     L.move.dst = pointer.pos.xy;
 
-    if(pointer.action == E_POINTER_DOWN) {
-        for(int i=0; i<FISH_MAX; i++) {
-            if(!L.fish[i].swarmed)
+    if (pointer.action == E_POINTER_DOWN) {
+        for (int i = 0; i < FISH_MAX; i++) {
+            if (!L.fish[i].swarmed)
                 continue;
-            if(vec2_distance(pointer.pos.xy, L.fish[i].pos) <= POINTER_DISTANCE) {
+            if (vec2_distance(pointer.pos.xy, L.fish[i].pos) <= POINTER_DISTANCE) {
                 L.move.active = i;
                 log_info("fish move start with %i", i);
             }
@@ -77,28 +88,33 @@ static void swarm_code(int fish_idx) {
     vec2 move_dir = {{0, 0}};
     int center_cnt = 0;
     int near_cnt = 0;
-    for(int i=0; i<FISH_MAX; i++) {
-        if(i == fish_idx)
+    for (int i = 0; i < FISH_MAX; i++) {
+        if (i == fish_idx)
             continue;
         vec2 delta = vec2_sub_vec(L.fish[i].pos, L.fish[fish_idx].pos);
         float fish_distance = vec2_norm(delta);
-        if(fish_distance <= SWARM_RADIUS) {
+        if (fish_distance <= SWARM_RADIUS) {
             center_cnt++;
             vec2_add_vec(center, L.fish[i].pos);
             L.fish[i].swarmed = true;
         }
-        if(fish_distance <= SWARM_NEAR) {
+        if (fish_distance <= SWARM_NEAR) {
             near_cnt++;
             vec2 dir = vec2_normalize(delta);
             dir = vec2_scale(dir, SWARM_NEAR - fish_distance);
             move_dir = vec2_sub_vec(move_dir, dir);
         }
     }
-    if(center_cnt == 0) {
+    if (center_cnt == 0) {
         L.fish[fish_idx].swarmed = false;
+        // move the lost fish slowly away from the swam center
+        vec2 swarm_center = fish_swarm_center();
+        vec2 dir = vec2_normalize(vec2_sub_vec(L.fish[fish_idx].pos, swarm_center));
+        L.fish[fish_idx].speed = vec2_scale(dir, 5);
         return;
     }
-    if(near_cnt == 0) {
+    if (near_cnt == 0) {
+        center = vec2_div(center, center_cnt);
         move_dir = vec2_sub_vec(center, L.fish[fish_idx].pos);
     }
     L.fish[fish_idx].speed = vec2_scale(vec2_normalize(move_dir), 15.0);
@@ -118,15 +134,23 @@ void fish_init() {
     L.ro = ro_batch_new(FISH_MAX, camera.gl_main,
                         r_texture_new_file(4, 2, "res/fish.png"));
 
-    for(int i=0; i<L.ro.num; i++) {
-        L.fish[i].pos = vec2_random_noise(0, 90);
+    for (int i = 0; i < L.ro.num; i++) {
+        L.fish[i].hsv = (vec3) {{
+                                        sca_random_range(0, 360),
+                                        0.3,
+                                        sca_random_range(0.5, 1.0)
+                                }};
+        L.fish[i].swarmed = false;
+        L.ro.rects[i].pose = u_pose_new(0, 0, 32, 32);
+    }
+
+    assert(FISH_MAX>=3);
+    for(int i=0; i<3; i++) {
         L.fish[i].swarmed = true;
-        L.ro.rects[i].pose = u_pose_new(L.fish[i].pos.x, L.fish[i].pos.y, 32, 32);
-        vec3 hsv = {{
-                            sca_random_range(0, 360),
-                            0.3, 1
-        }};
-        L.ro.rects[i].color.rgb = vec3_hsv2rgb(hsv);
+        L.fish[i].pos = random_euler_pos(SWARM_NEAR/2, SWARM_RADIUS/2);
+    }
+    for(int i=3; i<FISH_MAX; i++) {
+        L.fish[i].pos = random_euler_pos(96, 256);
     }
 
     ro_batch_update(&L.ro);
@@ -134,7 +158,7 @@ void fish_init() {
 
 void fish_update(float dtime) {
 
-    if(L.move.active < 0) {
+    if (L.move.active < 0) {
         L.move.ring_ro.rect.pose = u_pose_new_hidden();
     } else {
         vec2 fish_pos = L.fish[L.move.active].pos;
@@ -147,18 +171,24 @@ void fish_update(float dtime) {
         L.fish[L.move.active].speed = vec2_scale(dir, speed);
     }
 
-    for(int i=0; i<FISH_MAX; i++) {
-        if(!L.fish[i].swarmed || i==L.move.active)
+    for (int i = 0; i < FISH_MAX; i++) {
+        if (!L.fish[i].swarmed || i == L.move.active)
             continue;
         swarm_code(i);
     }
 
     animate(dtime);
 
-    for(int i=0; i<FISH_MAX; i++) {
+    for (int i = 0; i < FISH_MAX; i++) {
         vec2 delta = vec2_scale(L.fish[i].speed, dtime);
         L.fish[i].pos = vec2_add_vec(L.fish[i].pos, delta);
         u_pose_set_xy(&L.ro.rects[i].pose, L.fish[i].pos.x, L.fish[i].pos.y);
+
+        vec3 hsv = L.fish[i].hsv;
+        if(!L.fish[i].swarmed) {
+            hsv.v1 = 0;
+        }
+        L.ro.rects[i].color.rgb = vec3_hsv2rgb(hsv);
     }
 
     ro_batch_update(&L.ro);
@@ -172,13 +202,13 @@ void fish_render() {
 vec2 fish_swarm_center() {
     vec2 center = {{0, 0}};
     int cnt = 0;
-    for(int i=0; i<FISH_MAX; i++) {
-        if(L.fish[i].swarmed) {
+    for (int i = 0; i < FISH_MAX; i++) {
+        if (L.fish[i].swarmed) {
             center = vec2_add_vec(center, L.fish[i].pos);
             cnt++;
         }
     }
-    if(cnt == 0) {
+    if (cnt == 0) {
         log_warn("fish_swarm_center failed, no fish in the swarm");
         return center;
     }
