@@ -1,7 +1,7 @@
 #ifndef GMTKJAM21_FISH_H
 #define GMTKJAM21_FISH_H
 
-#define FISH_MAX 32
+#define FISH_MAX 1
 
 void fish_init();
 
