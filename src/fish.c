@@ -13,18 +13,19 @@
 #define FPS 6.0
 #define POINTER_DISTANCE 16.0
 #define ACTIVE_SPEED_FACTOR 1.5
+#define ACTIVE_SPEED_MAX 200.0
 
 #define SWARM_RADIUS 56.0
 #define SWARM_NEAR 28.0
 
 #define SWIM_AWAY_SPEED 5.0
 
-#define MAX_SPEED 100.0
+#define SPEED_MAX 100.0
 #define SPEED_FACTOR 10.0
 #define SPEED_SWARM_CENTER_FACTOR 0.5
 #define SPEED_LOCAL_CENTER_FACTOR 2.5
 #define SPEED_KEEP_DISTANCE_FACTOR 5.0
-#define SPEED_FOLLOW_ACTIVE_FACTOR 3.5
+#define SPEED_FOLLOW_ACTIVE_FACTOR 4.0
 
 
 typedef struct {
@@ -34,6 +35,7 @@ typedef struct {
     vec2 local_speed;
     vec3 hsv;
     bool swarmed;
+    float animate_time;
 } Fish_s;
 
 static struct {
@@ -59,15 +61,14 @@ static vec2 random_euler_pos(float min, float max) {
 }
 
 static void animate(float dtime) {
-    static float time = 0;
-    time = sca_mod(time + dtime, FRAMES / FPS);
-    int frame = time * FPS;
     for (int i = 0; i < FISH_MAX; i++) {
-//        if(L.fish[i].speed.x>10) {
-//            L.ro.rects[i].uv = u_pose_new(0, 0, -1, 1);
-//        } else if (L.fish[i].speed.x<-10){
-//            L.ro.rects[i].uv = u_pose_new(0, 0, 1, 1);
-//        }
+        L.fish[i].animate_time = sca_mod(L.fish[i].animate_time + dtime, FRAMES / FPS);
+        int frame = L.fish[i].animate_time * FPS;
+        if(L.fish[i].speed.x>10) {
+            L.ro.rects[i].uv = u_pose_new(0, 0, -1, 1);
+        } else if (L.fish[i].speed.x<-10){
+            L.ro.rects[i].uv = u_pose_new(0, 0, 1, 1);
+        }
         L.ro.rects[i].sprite.x = frame;
     }
 }
@@ -120,7 +121,7 @@ static void active_code() {
     vec2 dir = vec2_normalize(diff);
     float distance = vec2_norm(diff);
     float speed = distance * ACTIVE_SPEED_FACTOR;
-    speed = sca_min(speed, MAX_SPEED);
+    speed = sca_min(speed, ACTIVE_SPEED_MAX);
     L.fish[L.move.active].speed = vec2_scale(dir, speed);
 
     for(int i=0; i<FISH_MAX; i++) {
@@ -154,7 +155,6 @@ static void swarm_code(int fish_idx) {
         if (fish_distance <= SWARM_RADIUS) {
             local_cnt++;
             local_center = vec2_add_vec(local_center, L.fish[i].pos);
-            L.fish[i].swarmed = true;
             if(i==L.move.active) {
                 active_dir = delta;
             }
@@ -164,6 +164,7 @@ static void swarm_code(int fish_idx) {
             vec2 dir = vec2_normalize(delta);
             dir = vec2_scale(dir, SWARM_NEAR - fish_distance);
             keep_distance_dir = vec2_sub_vec(keep_distance_dir, dir);
+            L.fish[i].swarmed = true;
         }
     }
     local_center = vec2_div(local_center, local_cnt);
@@ -190,7 +191,7 @@ static void swarm_code(int fish_idx) {
     speed = vec2_add_vec(speed, vec2_scale(active_dir, SPEED_FOLLOW_ACTIVE_FACTOR));
     speed = vec2_scale(speed, SPEED_FACTOR);
 
-    float speed_value = sca_min(vec2_norm(speed), MAX_SPEED);
+    float speed_value = sca_min(vec2_norm(speed), SPEED_MAX);
     L.fish[fish_idx].set_speed = vec2_scale(vec2_normalize(speed), speed_value);
 }
 
@@ -208,22 +209,23 @@ void fish_init() {
     L.ro = ro_batch_new(FISH_MAX, camera.gl_main,
                         r_texture_new_file(4, 2, "res/fish.png"));
 
-    for (int i = 0; i < L.ro.num; i++) {
+    for (int i = 0; i < FISH_MAX; i++) {
         L.fish[i].hsv = (vec3) {{
                                         sca_random_range(0, 360),
-                                        0.3,
-                                        sca_random_range(0.5, 1.0)
+                                        0.5,
+                                        sca_random_range(0.75, 1.0)
                                 }};
         L.fish[i].swarmed = false;
+        L.fish[i].animate_time = sca_random();
         L.ro.rects[i].pose = u_pose_new(0, 0, 32, 32);
     }
 
-    assert(FISH_MAX>=3);
-    for(int i=0; i<2; i++) {
+    const int start_fishs = 1;
+    for(int i=0; i<start_fishs; i++) {
         L.fish[i].swarmed = true;
         L.fish[i].pos = random_euler_pos(SWARM_NEAR/2, SWARM_RADIUS/2);
     }
-    for(int i=2; i<FISH_MAX; i++) {
+    for(int i=start_fishs; i<FISH_MAX; i++) {
         L.fish[i].pos = random_euler_pos(96, 256);
     }
 
@@ -263,6 +265,7 @@ void fish_update(float dtime) {
         vec3 hsv = L.fish[i].hsv;
         if(!L.fish[i].swarmed) {
             hsv.v1 = 0;
+            hsv.v2 -= 0.25;
         }
         L.ro.rects[i].color.rgb = vec3_hsv2rgb(hsv);
     }
