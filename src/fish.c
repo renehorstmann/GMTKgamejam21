@@ -8,16 +8,22 @@
 #include "mathc/utils/color.h"
 #include "camera.h"
 #include "pixelparticles.h"
+#include "feed.h"
 #include "fish.h"
 
 #define FRAMES 4
 #define FPS 6.0
+#define MOUTH_FPS 2.0
 #define POINTER_DISTANCE 16.0
 #define ACTIVE_SPEED_FACTOR 1.5
 #define ACTIVE_SPEED_MAX 200.0
 
 #define SWARM_RADIUS 56.0
 #define SWARM_NEAR 28.0
+#define SWARM_FEED_RADIUS_FAR 20.0
+#define SWARM_FEED_RADIUS_NEAR 10.0
+
+#define SPEED_FEED 20.0
 
 #define SPEED_MAX 100.0
 #define SPEED_FACTOR 10.0
@@ -80,6 +86,7 @@ static void update_fish(Fish_s *self, bool swarmed, int idx, float dtime) {
 
     self->L.animate_time = sca_mod(self->L.animate_time + dtime, FRAMES / FPS);
     int frame = self->L.animate_time * FPS;
+    int mouth_frame = self->L.animate_time * MOUTH_FPS;
     if (self->L.looking_left && self->speed.x > 10)
         self->L.looking_left = false;
     if (!self->L.looking_left && self->speed.x < 10)
@@ -89,7 +96,7 @@ static void update_fish(Fish_s *self, bool swarmed, int idx, float dtime) {
     L.ro.rects[idx].color.rgb = vec3_hsv2rgb(hsv);
     L.ro.rects[idx].uv = u_pose_new(0, 0, self->L.looking_left ? 1 : -1, 1);
     L.ro.rects[idx].sprite.x = frame;
-    L.ro.rects[idx].sprite.y = self->L.state == FISH_STATE_SWIM ? 0 : 1;
+    L.ro.rects[idx].sprite.y = (self->L.state == FISH_STATE_EAT && mouth_frame%2==0) ? 1 : 0;
 }
 
 
@@ -147,8 +154,55 @@ static void active_code() {
     }
 }
 
+
+static vec2 feed_position(int feed_idx, bool looking_left) {
+    vec2 feed_pos = feed.feed[feed_idx].pos;
+    if(looking_left)
+        feed_pos.x -= 8.0;
+    else
+        feed_pos.x += 8.0;
+    return feed_pos;
+}
+
+static bool check_feed(int fish_idx) {
+    fish.swarmed[fish_idx].L.state = FISH_STATE_SWIM;
+    vec2 fish_pos = fish.swarmed[fish_idx].pos;
+
+    bool feed_found = false;
+    vec2 feed_pos;
+    bool near = false;
+    for(int i=0; i<feed.feed_size; i++) {
+        feed_pos = feed_position(i, fish.swarmed[fish_idx].L.looking_left);
+        float dist = vec2_distance(feed_pos, fish_pos);
+        if(dist <= SWARM_FEED_RADIUS_NEAR) {
+            feed_found = true;
+            near = true;
+            break;
+        }
+        if(dist <= SWARM_FEED_RADIUS_FAR) {
+            feed_found = true;
+        }
+    }
+    if(!feed_found)
+        return false;
+
+    if(near) {
+        fish.swarmed[fish_idx].L.state = FISH_STATE_EAT;
+        fish.swarmed[fish_idx].set_speed = vec2_set(0);
+        return true;
+    }
+
+    vec2 dir = vec2_normalize(vec2_sub_vec(feed_pos, fish_pos));
+    fish.swarmed[fish_idx].set_speed = vec2_scale(dir, SPEED_FEED);
+    return true;
+}
+
 static void swarm_code(int fish_idx) {
     assert(fish_idx < fish.swarmed_size);
+
+    if(check_feed(fish_idx))
+        return;
+
     vec2 swarm_center_dir = {0};
     vec2 local_center_dir = {0};
     vec2 keep_distance_dir = {0};

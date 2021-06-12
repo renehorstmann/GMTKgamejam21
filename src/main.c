@@ -80,8 +80,8 @@ static void main_loop(float delta_time) {
 
     background_render();
     pixelparticles_render();
-    fish_render();
     feed_render();
+    fish_render();
     bubbles_render();
 
     hud_render();
