@@ -20,8 +20,8 @@
 
 #define SWARM_RADIUS 56.0
 #define SWARM_NEAR 28.0
-#define SWARM_FEED_RADIUS_FAR 20.0
-#define SWARM_FEED_RADIUS_NEAR 10.0
+#define SWARM_FEED_RADIUS_FAR 48.0
+#define SWARM_FEED_RADIUS_NEAR 16.0
 
 #define SPEED_FEED 20.0
 
@@ -89,7 +89,7 @@ static void update_fish(Fish_s *self, bool swarmed, int idx, float dtime) {
     int mouth_frame = self->L.animate_time * MOUTH_FPS;
     if (self->L.looking_left && self->speed.x > 10)
         self->L.looking_left = false;
-    if (!self->L.looking_left && self->speed.x < 10)
+    if (!self->L.looking_left && self->speed.x < -10)
         self->L.looking_left = true;
 
     L.ro.rects[idx].pose = u_pose_new(self->pos.x, self->pos.y, 32, 32);
@@ -158,9 +158,9 @@ static void active_code() {
 static vec2 feed_position(int feed_idx, bool looking_left) {
     vec2 feed_pos = feed.feed[feed_idx].pos;
     if(looking_left)
-        feed_pos.x -= 8.0;
-    else
         feed_pos.x += 8.0;
+    else
+        feed_pos.x -= 8.0;
     return feed_pos;
 }
 
@@ -168,19 +168,21 @@ static bool check_feed(int fish_idx) {
     fish.swarmed[fish_idx].L.state = FISH_STATE_SWIM;
     vec2 fish_pos = fish.swarmed[fish_idx].pos;
 
-    bool feed_found = false;
     vec2 feed_pos;
+    bool feed_found = false;
     bool near = false;
     for(int i=0; i<feed.feed_size; i++) {
-        feed_pos = feed_position(i, fish.swarmed[fish_idx].L.looking_left);
-        float dist = vec2_distance(feed_pos, fish_pos);
+        vec2 pos = feed_position(i, fish.swarmed[fish_idx].L.looking_left);
+        float dist = vec2_distance(pos, fish_pos);
         if(dist <= SWARM_FEED_RADIUS_NEAR) {
             feed_found = true;
+            feed_pos = pos;
             near = true;
             break;
         }
         if(dist <= SWARM_FEED_RADIUS_FAR) {
             feed_found = true;
+            feed_pos = pos;
         }
     }
     if(!feed_found)
@@ -194,6 +196,11 @@ static bool check_feed(int fish_idx) {
 
     vec2 dir = vec2_normalize(vec2_sub_vec(feed_pos, fish_pos));
     fish.swarmed[fish_idx].set_speed = vec2_scale(dir, SPEED_FEED);
+    vec2_print(feed_pos);
+    printf(" : ");
+    vec2_print(fish_pos);
+    printf(" : ");
+    vec2_println(fish.swarmed[fish_idx].set_speed);
     return true;
 }
 

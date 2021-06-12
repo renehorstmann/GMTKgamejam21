@@ -55,7 +55,7 @@ static void main_loop(float delta_time) {
     // e updates
     e_input_update();
 
-//    delta_time*=10;
+//    delta_time*=1;
 
     // simulate
     camera_update();
