@@ -268,9 +268,12 @@ void fish_catch_alone(int idx) {
 
     emit_particles(fish.alone[idx].pos.x, fish.alone[idx].pos.y, vec3_hsv2rgb(fish.alone[idx].hsv));
 
-    fish.swarmed[fish.swarmed_size++] = fish.alone[idx];
+    fish.swarmed[fish.swarmed_size] = fish.alone[idx];
     fish.alone_size--;
     for (int i = idx; i < fish.alone_size; i++) {
         fish.alone[i] = fish.alone[i + 1];
     }
+
+    fish.last_catched_idx = fish.swarmed_size;
+    fish.swarmed_size++;
 }

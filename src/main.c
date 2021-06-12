@@ -12,6 +12,7 @@
 #include "bubbles.h"
 #include "fish.h"
 #include "spawn.h"
+#include "hud.h"
 
 static void main_loop(float delta_time);
 
@@ -36,6 +37,8 @@ int main(int argc, char **argv) {
     bubbles_init();
     fish_init();
     spawn_init();
+    hud_init();
+
 
 
     e_window_main_loop(main_loop);
@@ -61,6 +64,7 @@ static void main_loop(float delta_time) {
     bubbles_update(delta_time);
     fish_update(delta_time);
     spawn_update(delta_time);
+    hud_update(delta_time);
 
     // scripts
     cameractrl.in.dst = fish_swarm_center();
@@ -75,6 +79,8 @@ static void main_loop(float delta_time) {
     pixelparticles_render();
     fish_render();
     bubbles_render();
+
+    hud_render();
 
 
     // uncomment to clone the current framebuffer into r_render.framebuffer_tex

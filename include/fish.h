@@ -31,6 +31,8 @@ struct FishGlobals_s {
     // (swarmed_size + alone_size) <= FISH_MAX
     size_t swarmed_size;
     size_t alone_size;
+
+    int last_catched_idx;
 } ;
 extern struct FishGlobals_s fish;
 
