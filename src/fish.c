@@ -164,33 +164,34 @@ static vec2 feed_position(int feed_idx, bool looking_left) {
     return feed_pos;
 }
 
-static bool check_feed(int fish_idx) {
+static bool check_feed(int fish_idx, float dtime) {
     fish.swarmed[fish_idx].L.state = FISH_STATE_SWIM;
     vec2 fish_pos = fish.swarmed[fish_idx].pos;
 
+    int dst = -1;
     vec2 feed_pos;
-    bool feed_found = false;
     bool near = false;
     for(int i=0; i<feed.feed_size; i++) {
         vec2 pos = feed_position(i, fish.swarmed[fish_idx].L.looking_left);
         float dist = vec2_distance(pos, fish_pos);
         if(dist <= SWARM_FEED_RADIUS_NEAR) {
-            feed_found = true;
+            dst = i;
             feed_pos = pos;
             near = true;
             break;
         }
         if(dist <= SWARM_FEED_RADIUS_FAR) {
-            feed_found = true;
+            dst = i;
             feed_pos = pos;
         }
     }
-    if(!feed_found)
+    if(dst<0)
         return false;
 
     if(near) {
         fish.swarmed[fish_idx].L.state = FISH_STATE_EAT;
         fish.swarmed[fish_idx].set_speed = vec2_set(0);
+        feed_eat(&feed.feed[dst], dtime);
         return true;
     }
 
@@ -204,10 +205,10 @@ static bool check_feed(int fish_idx) {
     return true;
 }
 
-static void swarm_code(int fish_idx) {
+static void swarm_code(int fish_idx, float dtime) {
     assert(fish_idx < fish.swarmed_size);
 
-    if(check_feed(fish_idx))
+    if(check_feed(fish_idx, dtime))
         return;
 
     vec2 swarm_center_dir = {0};
@@ -297,7 +298,7 @@ void fish_update(float dtime) {
     for (int i = 0; i < fish.swarmed_size; i++) {
         if (i == L.move.active)
             continue;
-        swarm_code(i);
+        swarm_code(i, dtime);
     }
 
     for (int i = 0; i < fish.swarmed_size; i++) {
