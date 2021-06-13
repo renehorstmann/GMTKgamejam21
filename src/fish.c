@@ -101,7 +101,7 @@ static void update_fish(Fish_s *self, bool swarmed, int idx, float dtime) {
 
 
 static void pointer_callback(ePointer_s pointer, void *user_data) {
-    if (pointer.id != 0)
+    if (pointer.id != 0 || !fish.game_running)
         return;
 
     if (pointer.action == E_POINTER_UP) {
@@ -135,7 +135,8 @@ static void swarm_center() {
 }
 
 static void active_code() {
-    assert(L.move.active >= 0 && L.move.active < fish.swarmed_size);
+    if(!(L.move.active >= 0 && L.move.active < fish.swarmed_size))
+        return;
     vec2 fish_pos = fish.swarmed[L.move.active].pos;
     vec2 diff = vec2_sub_vec(L.move.dst, fish_pos);
     vec2 dir = vec2_normalize(diff);
@@ -274,6 +275,7 @@ void fish_init() {
 
 
     ro_batch_update(&L.ro);
+    fish.game_running = true;
 }
 
 void fish_kill() {

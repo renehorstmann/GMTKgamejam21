@@ -51,6 +51,7 @@ void dead_update(float dtime) {
     } else {
         L.time = 0;
         sprintf(buf, "GAME OVER");
+        fish.game_running = false;
     }
 
     vec2 size = ro_text_set_text(&L.info, buf);

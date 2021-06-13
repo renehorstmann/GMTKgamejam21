@@ -33,6 +33,7 @@ struct FishGlobals_s {
     size_t alone_size;
 
     int last_catched_idx;
+    bool game_running;
 } ;
 extern struct FishGlobals_s fish;
 
