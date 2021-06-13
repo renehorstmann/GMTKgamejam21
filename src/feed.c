@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "pixelparticles.h"
 #include "hud.h"
+#include "sound.h"
 #include "feed.h"
 
 #define EAT_SIZE_TIME 1.0
@@ -97,5 +98,6 @@ void feed_eat(Feed_s *self, float time) {
 
     if(sca_mod(prev_size, 0.5) < sca_mod(self->size, 0.5)) {
         emit_particles(self->pos.x, self->pos.y, self->color.rgb);
+        sound_play_feed();
     }
 }

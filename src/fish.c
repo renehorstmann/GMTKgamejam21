@@ -373,5 +373,4 @@ void fish_eat(int idx, bool swarmed) {
     }
     eaten.pos = vec2_set(FLT_MAX);
     fish.alone[fish.alone_size++] = eaten;
-    printf("eaten %i %i\n", idx, swarmed);
 }

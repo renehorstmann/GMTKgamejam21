@@ -6,6 +6,7 @@
 
 #include "camera.h"
 #include "hudcamera.h"
+#include "sound.h"
 #include "game.h"
 
 
@@ -28,6 +29,7 @@ int main(int argc, char **argv) {
     // init systems
     camera_init();
     hudcamera_init();
+    sound_init();
     game_init();
 
 
