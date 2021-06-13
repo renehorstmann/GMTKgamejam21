@@ -96,7 +96,7 @@ static void update_fish(Fish_s *self, bool swarmed, int idx, float dtime) {
     L.ro.rects[idx].color.rgb = vec3_hsv2rgb(hsv);
     L.ro.rects[idx].uv = u_pose_new(0, 0, self->L.looking_left ? 1 : -1, 1);
     L.ro.rects[idx].sprite.x = frame;
-    L.ro.rects[idx].sprite.y = (self->L.state == FISH_STATE_EAT && mouth_frame%2==0) ? 1 : 0;
+    L.ro.rects[idx].sprite.y = (self->L.state == FISH_STATE_EAT && mouth_frame % 2 == 0) ? 1 : 0;
 }
 
 
@@ -157,7 +157,7 @@ static void active_code() {
 
 static vec2 feed_position(int feed_idx, bool looking_left) {
     vec2 feed_pos = feed.feed[feed_idx].pos;
-    if(looking_left)
+    if (looking_left)
         feed_pos.x += 8.0;
     else
         feed_pos.x -= 8.0;
@@ -171,24 +171,24 @@ static bool check_feed(int fish_idx, float dtime) {
     int dst = -1;
     vec2 feed_pos;
     bool near = false;
-    for(int i=0; i<feed.feed_size; i++) {
+    for (int i = 0; i < feed.feed_size; i++) {
         vec2 pos = feed_position(i, fish.swarmed[fish_idx].L.looking_left);
         float dist = vec2_distance(pos, fish_pos);
-        if(dist <= SWARM_FEED_RADIUS_NEAR) {
+        if (dist <= SWARM_FEED_RADIUS_NEAR) {
             dst = i;
             feed_pos = pos;
             near = true;
             break;
         }
-        if(dist <= SWARM_FEED_RADIUS_FAR) {
+        if (dist <= SWARM_FEED_RADIUS_FAR) {
             dst = i;
             feed_pos = pos;
         }
     }
-    if(dst<0)
+    if (dst < 0)
         return false;
 
-    if(near) {
+    if (near) {
         fish.swarmed[fish_idx].L.state = FISH_STATE_EAT;
         fish.swarmed[fish_idx].set_speed = vec2_set(0);
         feed_eat(&feed.feed[dst], dtime);
@@ -203,7 +203,7 @@ static bool check_feed(int fish_idx, float dtime) {
 static void swarm_code(int fish_idx, float dtime) {
     assert(fish_idx < fish.swarmed_size);
 
-    if(check_feed(fish_idx, dtime))
+    if (check_feed(fish_idx, dtime))
         return;
 
     vec2 swarm_center_dir = {0};
@@ -279,16 +279,19 @@ void fish_init() {
 void fish_update(float dtime) {
     assert(fish.swarmed_size + fish.alone_size <= FISH_MAX);
 
-    if (L.move.active < 0) {
+    if (L.move.active < 0 || fish.swarmed_size <= 0) {
         L.move.ring_ro.rect.pose = u_pose_new_hidden();
-    } else {
-        vec2 fish_pos = fish.swarmed[L.move.active].pos;
-        L.move.ring_ro.rect.pose = u_pose_new(fish_pos.x, fish_pos.y, 64, 64);
-        active_code();
     }
 
-    if(fish.swarmed_size>0) {
+    if (fish.swarmed_size > 0) {
         swarm_center();
+
+
+        if (L.move.active >= 0) {
+            vec2 fish_pos = fish.swarmed[L.move.active].pos;
+            L.move.ring_ro.rect.pose = u_pose_new(fish_pos.x, fish_pos.y, 64, 64);
+            active_code();
+        }
 
         for (int i = 0; i < fish.swarmed_size; i++) {
             if (i == L.move.active)
@@ -338,24 +341,24 @@ void fish_catch_alone(int idx) {
 
 
 void fish_eat(int idx, bool swarmed) {
-    assert(idx>=0);
+    assert(idx >= 0);
     Fish_s eaten;
-    if(swarmed) {
+    if (swarmed) {
         assert(idx < fish.swarmed_size);
-        if(idx == L.move.active)
+        if (idx == L.move.active)
             L.move.active = -1;
 
         eaten = fish.swarmed[idx];
         fish.swarmed_size--;
-        for(int i=idx; i<fish.swarmed_size; i++) {
-            fish.swarmed[i] = fish.swarmed[i+1];
+        for (int i = idx; i < fish.swarmed_size; i++) {
+            fish.swarmed[i] = fish.swarmed[i + 1];
         }
     } else {
         assert(idx < fish.alone_size);
         eaten = fish.alone[idx];
         fish.alone_size--;
-        for(int i=idx; i<fish.alone_size; i++) {
-            fish.alone[i] = fish.alone[i+1];
+        for (int i = idx; i < fish.alone_size; i++) {
+            fish.alone[i] = fish.alone[i + 1];
         }
     }
     eaten.pos = vec2_set(FLT_MAX);
