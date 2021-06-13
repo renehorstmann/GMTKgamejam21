@@ -21,6 +21,8 @@ extern struct FeedGlobals_s feed;
 
 void feed_init();
 
+void feed_kill();
+
 void feed_update(float dtime);
 
 void feed_render();

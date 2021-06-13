@@ -5,6 +5,8 @@
 
 void bubbles_init();
 
+void bubbles_kill();
+
 void bubbles_update(float dtime);
 
 void bubbles_render();

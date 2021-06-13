@@ -6,16 +6,10 @@
 
 #include "camera.h"
 #include "hudcamera.h"
-#include "cameractrl.h"
-#include "background.h"
-#include "pixelparticles.h"
-#include "bubbles.h"
-#include "fish.h"
-#include "feed.h"
-#include "shark.h"
-#include "spawn.h"
-#include "hud.h"
-#include "dead.h"
+#include "game.h"
+
+
+#define UPDATES_PER_SECOND 200
 
 static void main_loop(float delta_time);
 
@@ -34,16 +28,7 @@ int main(int argc, char **argv) {
     // init systems
     camera_init();
     hudcamera_init();
-    cameractrl_init();
-    background_init(1280, 1280, true, true, "res/background.png");
-    pixelparticles_init();
-    bubbles_init();
-    fish_init();
-    feed_init();
-    shark_init();
-    spawn_init();
-    hud_init();
-    dead_init();
+    game_init();
 
 
 
@@ -56,44 +41,30 @@ int main(int argc, char **argv) {
 
 
 static void main_loop(float delta_time) {
+    static float u_time = 0;
+
     // e updates
     e_input_update();
-
-//    delta_time*=5;
 
     // simulate
     camera_update();
     hudcamera_update();
-    cameractrl_update(delta_time);
-    background_update(delta_time);
-    pixelparticles_update(delta_time);
-    bubbles_update(delta_time);
-    fish_update(delta_time);
-    feed_update(delta_time);
-    shark_update(delta_time);
-    spawn_update(delta_time);
-    hud_update(delta_time);
-    dead_update(delta_time);
 
-    // scripts
-    cameractrl.in.dst = fish_swarm_center();
-//    vec2_println(cameractrl.in.dst);
+    // fixed update ps
+    u_time += delta_time;
+    while (u_time > 0) {
+        const float fixed_time = 1.0 / UPDATES_PER_SECOND;
+        u_time -= fixed_time;
 
+        // simulate game
+        game_update(fixed_time);
+    }
 
 
     // render
     r_render_begin_frame(e_window.size.x, e_window.size.y);
 
-    background_render();
-    pixelparticles_render();
-    feed_render();
-    fish_render();
-    shark_render();
-    bubbles_render();
-
-    dead_render();
-    hud_render();
-
+    game_render();
 
     // uncomment to clone the current framebuffer into r_render.framebuffer_tex
     r_render_blit_framebuffer(e_window.size.x, e_window.size.y);

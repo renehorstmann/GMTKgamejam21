@@ -24,6 +24,8 @@ extern struct SharkGlobals_s shark;
 
 void shark_init();
 
+void shark_kill();
+
 void shark_update(float dtime);
 
 void shark_render();

@@ -229,6 +229,10 @@ void spawn_init() {
     L.game_time = 0;
 }
 
+void spawn_kill() {
+    memset(&L, 0, sizeof(L));
+}
+
 
 void spawn_update(float dtime) {
     L.game_time += dtime;

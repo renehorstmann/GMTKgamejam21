@@ -3,6 +3,8 @@
 
 void dead_init();
 
+void dead_kill();
+
 void dead_update(float dtime);
 
 void dead_render();

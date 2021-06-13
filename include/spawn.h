@@ -3,6 +3,8 @@
 
 void spawn_init();
 
+void spawn_kill();
+
 void spawn_update(float dtime);
 
 #endif //GMTKJAM21_SPAWN_H

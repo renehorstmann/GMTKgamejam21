@@ -99,6 +99,12 @@ void shark_init() {
     ro_batch_update(&L.ro);
 }
 
+void shark_kill() {
+    ro_batch_kill(&L.ro);
+    memset(&L, 0, sizeof(L));
+    memset(&shark, 0, sizeof(shark));
+}
+
 void shark_update(float dtime) {
     for(int i=0; i<shark.shark_size; i++) {
         update_shark(i, dtime);

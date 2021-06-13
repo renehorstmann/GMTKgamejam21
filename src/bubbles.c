@@ -38,6 +38,11 @@ void bubbles_init() {
     u_image_kill(&img);
 }
 
+void bubbles_kill() {
+    ro_particlerefract_kill(&L.ro);
+    memset(&L, 0, sizeof(L));
+}
+
 void bubbles_update(float dtime) {
     L.time += dtime;
     for(int i=0; i<L.ro.num; i++) {

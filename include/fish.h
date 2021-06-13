@@ -38,6 +38,8 @@ extern struct FishGlobals_s fish;
 
 void fish_init();
 
+void fish_kill();
+
 void fish_update(float dtime);
 
 void fish_render();

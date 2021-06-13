@@ -276,6 +276,14 @@ void fish_init() {
     ro_batch_update(&L.ro);
 }
 
+void fish_kill() {
+    e_input_unregister_pointer_event(pointer_callback);
+    ro_single_kill(&L.move.ring_ro);
+    ro_batch_kill(&L.ro);
+    memset(&L, 0, sizeof(L));
+    memset(&fish, 0, sizeof(fish));
+}
+
 void fish_update(float dtime) {
     assert(fish.swarmed_size + fish.alone_size <= FISH_MAX);
 

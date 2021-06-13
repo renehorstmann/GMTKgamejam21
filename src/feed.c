@@ -58,6 +58,12 @@ void feed_init() {
     ro_batch_update(&L.ro);
 }
 
+void feed_kill() {
+    ro_batch_kill(&L.ro);
+    memset(&L, 0, sizeof(L));
+    memset(&feed, 0, sizeof(feed));
+}
+
 void feed_update(float dtime) {
     for (int i = 0; i < feed.feed_size; i++) {
         vec2 delta = vec2_scale(feed.feed[i].speed, dtime);

@@ -26,6 +26,12 @@ void dead_init() {
     ro_text_set_color(&L.info, R_COLOR_BLACK);
 }
 
+void dead_kill() {
+    ro_single_kill(&L.ro);
+    ro_text_kill(&L.info);
+    memset(&L, 0, sizeof(L));
+}
+
 void dead_update(float dtime) {
     if(fish.swarmed_size >= 3) {
         L.show = false;
