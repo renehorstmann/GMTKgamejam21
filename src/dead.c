@@ -7,6 +7,7 @@
 #include "fish.h"
 #include "game.h"
 #include "button.h"
+#include "sound.h"
 #include "dead.h"
 
 
@@ -67,6 +68,7 @@ void dead_update(float dtime) {
     if (!L.show) {
         L.show = true;
         L.time = RESCUE_TIME;
+        sound_play_gameover();
     }
 
     L.time -= dtime;

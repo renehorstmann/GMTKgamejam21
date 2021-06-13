@@ -5,6 +5,7 @@
 #include "pixelparticles.h"
 #include "fish.h"
 #include "camera.h"
+#include "sound.h"
 #include "shark.h"
 
 
@@ -74,6 +75,7 @@ static void check_eat_fish(Shark_s *self) {
         if(vec2_distance(mouth, fish.swarmed[i].pos) < 16) {
             emit_particles(fish.swarmed[i].pos.x, fish.swarmed[i].pos.y, (vec3) {{0.8, 0.2, 0.2}});
             fish_eat(i, true);
+            sound_play_shark();
             self->L.mouth_time = MOUTH_TIME;
             return;
         }
@@ -82,6 +84,7 @@ static void check_eat_fish(Shark_s *self) {
         if(vec2_distance(mouth, fish.alone[i].pos) < 16) {
             emit_particles(fish.alone[i].pos.x, fish.alone[i].pos.y, (vec3) {{0.4, 0.2, 0.2}});
             fish_eat(i, false);
+            sound_play_shark();
             self->L.mouth_time = MOUTH_TIME;
             return;
         }
