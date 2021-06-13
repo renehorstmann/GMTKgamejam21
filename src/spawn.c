@@ -197,7 +197,7 @@ void spawn_init() {
     feed.feed_size = FEED_MAX;
 
     for(int i=0; i<SHARK_MAX; i++) {
-        shark.shark[i] = new_shark(vec2_set(FLT_MAX));
+        shark.shark[i] = new_shark(vec2_set(-FLT_MAX)); // to not eat fishis set are set to FLT_MAX
     }
     shark.shark_size = SHARK_MAX;
 

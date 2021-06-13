@@ -337,14 +337,17 @@ void fish_catch_alone(int idx) {
 
 
 void fish_eat(int idx, bool swarmed) {
+    assert(idx>=0);
     Fish_s eaten;
     if(swarmed) {
+        assert(idx < fish.swarmed_size);
         eaten = fish.swarmed[idx];
         fish.swarmed_size--;
         for(int i=idx; i<fish.swarmed_size; i++) {
             fish.swarmed[i] = fish.swarmed[i+1];
         }
     } else {
+        assert(idx < fish.alone_size);
         eaten = fish.alone[idx];
         fish.alone_size--;
         for(int i=idx; i<fish.alone_size; i++) {
@@ -353,4 +356,5 @@ void fish_eat(int idx, bool swarmed) {
     }
     eaten.pos = vec2_set(FLT_MAX);
     fish.alone[fish.alone_size++] = eaten;
+    printf("eaten %i %i\n", idx, swarmed);
 }

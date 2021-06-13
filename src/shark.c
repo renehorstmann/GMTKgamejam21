@@ -75,6 +75,7 @@ static void check_eat_fish(Shark_s *self) {
             emit_particles(fish.swarmed[i].pos.x, fish.swarmed[i].pos.y, (vec3) {{0.8, 0.2, 0.2}});
             fish_eat(i, true);
             self->L.mouth_time = MOUTH_TIME;
+            return;
         }
     }
     for(int i=0; i<fish.alone_size; i++) {
@@ -82,6 +83,7 @@ static void check_eat_fish(Shark_s *self) {
             emit_particles(fish.alone[i].pos.x, fish.alone[i].pos.y, (vec3) {{0.4, 0.2, 0.2}});
             fish_eat(i, false);
             self->L.mouth_time = MOUTH_TIME;
+            return;
         }
     }
 }
