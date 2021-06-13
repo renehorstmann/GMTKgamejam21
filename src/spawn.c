@@ -14,7 +14,7 @@
 #define RESPAWN_FISH_TIME 5.0
 #define RESPAWN_FISH_SPEED 20.0
 
-#define RESPAWN_FEED_TIME 5.0
+#define RESPAWN_FEED_TIME 1.0
 #define RESPAWN_FEED_SPEED 10.0
 
 static struct {
@@ -107,7 +107,7 @@ static void renew_feed(Feed_s *self) {
 
 static void respawn_feed() {
     log_info("respawn_feed");
-    mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 32, camera_height() + 32);
+    mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 16, camera_height() + 16);
     for (int i = 0; i < feed.feed_size; i++) {
         if (!u_pose_aa_contains(border, feed.feed[i].pos)) {
             renew_feed(&feed.feed[i]);
@@ -147,7 +147,7 @@ void spawn_update(float dtime) {
         respawn_fish();
     }
 
-    L.fish_time += dtime;
+    L.feed_time += dtime;
     if (L.feed_time > RESPAWN_FEED_TIME) {
         L.feed_time -= RESPAWN_FEED_TIME;
         respawn_feed();

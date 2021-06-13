@@ -3,7 +3,7 @@
 
 #include "mathc/types/float.h"
 
-#define FEED_MAX 16
+#define FEED_MAX 24
 
 typedef struct {
     vec2 pos;
