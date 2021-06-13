@@ -39,13 +39,13 @@ void sound_init() {
         return;
     }
 
-    Mix_Chunk *bubbles = Mix_LoadWAV("res/sound_bubbles.wav");
-    if (bubbles) {
+    Mix_Music *bubbles = Mix_LoadMUS("res/sound_bubbles.ogg");
+    if (!bubbles) {
         log_warn("failed to load bubbles: %s", Mix_GetError());
         return;
     }
 
-    if (Mix_PlayChannel(-1, bubbles, -1) == -1) {
+    if (Mix_PlayMusic(bubbles, -1) == -1) {
         log_warn("failed to play");
         return;
     }
