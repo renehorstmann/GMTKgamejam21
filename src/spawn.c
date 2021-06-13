@@ -23,10 +23,19 @@
 #define FEED_SIZE_MIN 5
 #define FEED_SIZE_MAX 10
 
+#define SHARK_DURATION 120.0
+#define RESPAWN_SHARK_TIME_START 10.0
+#define RESPAWN_SHARK_TIME_END 2.0
+#define RESPAWN_SHARK_TIME_MIN 0.5
+#define SHARK_START_SPEED_START 30.0
+#define SHARK_START_SPEED_END 60.0
+#define SHARK_MAX_SPEED 120.0
+
 static struct {
     float fish_time;
     float feed_time;
     float shark_time;
+    float game_time;
 } L;
 
 static vec3 hsv_fish() {
@@ -167,9 +176,25 @@ static void renew_shark(Shark_s *self) {
     vec4 pos_dir = random_spawn_pos_dir(32);
     vec2 new_pos = pos_dir.xy;
     vec2 speed = pos_dir.zw;
-    speed = vec2_scale(speed, 30.0);
+    float speed_value = sca_mix(SHARK_START_SPEED_START, SHARK_START_SPEED_END, L.game_time / SHARK_DURATION);
+    speed_value = sca_min(speed_value, SHARK_MAX_SPEED);
+    speed = vec2_scale(speed, speed_value);
     self->pos = new_pos;
     self->speed = speed;
+}
+
+static void respawn_shark() {
+    log_info("respawn_shark");
+    mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 64, camera_height() + 32);
+    static int last;
+    for (int i = 0; i < shark.shark_size; i++) {
+        int idx = (i + last) % shark.shark_size;
+        if (!u_pose_aa_contains(border, shark.shark[idx].pos)) {
+            renew_shark(&shark.shark[idx]);
+            last = idx;
+            return;
+        }
+    }
 }
 
 void spawn_init() {
@@ -200,11 +225,14 @@ void spawn_init() {
         shark.shark[i] = new_shark(vec2_set(-FLT_MAX)); // to not eat fishis set are set to FLT_MAX
     }
     shark.shark_size = SHARK_MAX;
-
+    L.shark_time = RESPAWN_SHARK_TIME_START * 0.75;
+    L.game_time = 120;
 }
 
 
 void spawn_update(float dtime) {
+    L.game_time += dtime;
+    
     L.fish_time += dtime;
     if (L.fish_time > RESPAWN_FISH_TIME) {
         L.fish_time -= RESPAWN_FISH_TIME;
@@ -224,10 +252,11 @@ void spawn_update(float dtime) {
     }
 
     L.shark_time += dtime;
-    if (L.shark_time > 5.0) {
-        L.shark_time -= 5.0;
-        static int sh_idx = 0;
-        renew_shark(&shark.shark[sh_idx]);
-        sh_idx = (sh_idx+1) % SHARK_MAX;
+    float respawn_time = sca_mix(RESPAWN_SHARK_TIME_START, RESPAWN_SHARK_TIME_END,
+                                 L.game_time / SHARK_DURATION);
+    respawn_time = sca_max(respawn_time, RESPAWN_SHARK_TIME_MIN);
+    if (L.shark_time > respawn_time) {
+        L.shark_time -= respawn_time;
+        respawn_shark();
     }
 }

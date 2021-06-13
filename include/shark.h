@@ -3,7 +3,7 @@
 
 #include "mathc/types/float.h"
 
-#define SHARK_MAX 8
+#define SHARK_MAX 32
 
 typedef struct {
     vec2 pos;
