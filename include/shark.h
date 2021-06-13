@@ -9,6 +9,10 @@ typedef struct {
     vec2 pos;
     vec2 speed;
     vec4 color;
+
+    struct {
+        float animate_time;
+    } L;
 } Shark_s;
 
 struct SharkGlobals_s {

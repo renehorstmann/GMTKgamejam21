@@ -7,6 +7,7 @@
 #include "mathc/utils/color.h"
 #include "fish.h"
 #include "feed.h"
+#include "shark.h"
 #include "camera.h"
 #include "cameractrl.h"
 #include "spawn.h"
@@ -25,6 +26,7 @@
 static struct {
     float fish_time;
     float feed_time;
+    float shark_time;
 } L;
 
 static vec3 hsv_fish() {
@@ -47,27 +49,24 @@ static vec4 color_feed() {
     return color;
 }
 
+static vec4 color_shark() {
+    vec4 color;
+    color.rgb = vec3_random_range(0.7, 1.0);
+    color.a = 1.0;
+    return color;
+}
+
 static vec2 random_euler_pos(float min, float max) {
     float angle = sca_random_range(0, 2 * M_PI);
     float distance = sca_random_range(min, max);
     return vec2_scale((vec2) {{sca_cos(angle), sca_sin(angle)}}, distance);
 }
 
-static vec2 random_offscreen_pos(float range) {
-    float x = sca_random_range(camera_width() / 2, camera_width() / 2 + range);
-    float y = sca_random_range(camera_height() / 2, camera_height() / 2 + range);
-    if (rand() % 2 == 0)
-        x *= -1;
-    if (rand() % 2 == 0)
-        y *= -1;
-    return (vec2) {{x, y}};
-}
-
 static Fish_s new_fish(vec2 pos) {
     return (Fish_s) {
             .pos = pos,
             .hsv = hsv_fish(),
-            .L.animate_time = sca_random(),
+            .L.animate_time = sca_random_range(0, 4),
             .L.looking_left = rand() % 2 == 0
     };
 }
@@ -80,17 +79,25 @@ static Feed_s new_feed(vec2 pos) {
     };
 }
 
+static Shark_s new_shark(vec2 pos) {
+    return (Shark_s) {
+            .pos = pos,
+            .color = color_shark(),
+            .L.animate_time = sca_random_range(0, 4)
+    };
+}
+
 static void respawn_fish() {
     log_info("respawn_fish");
     mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 32, camera_height() + 32);
+    float radius = camera_height()>camera_width()?camera_height() : camera_width();
     for (int i = 0; i < fish.alone_size; i++) {
         if (!u_pose_aa_contains(border, fish.alone[i].pos)) {
             log_info("respawn_fish -> found");
-            vec2 new_pos = vec2_add_vec(cameractrl.pos, random_offscreen_pos(64));
-            new_pos = vec2_add_vec(new_pos, vec2_random_noise(0, 64));
+            vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 32, radius + 64));
             vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
             speed = vec2_normalize(speed);
-            speed = vec2_add_vec(speed, vec2_random_noise(0, 0.25));
+            speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
             speed = vec2_normalize(speed);
             speed = vec2_scale(speed, RESPAWN_FISH_SPEED);
             fish.alone[i].pos = new_pos;
@@ -104,11 +111,11 @@ static void respawn_fish() {
 
 static void renew_feed(Feed_s *self) {
     log_info("renew_feed");
-    vec2 new_pos = vec2_add_vec(cameractrl.pos, random_offscreen_pos(64));
-    new_pos = vec2_add_vec(new_pos, vec2_random_noise(0, 64));
+    float radius = camera_height()>camera_width()?camera_height() : camera_width();
+    vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 32, radius + 64));
     vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
     speed = vec2_normalize(speed);
-    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.25));
+    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
     speed = vec2_normalize(speed);
     speed = vec2_scale(speed, RESPAWN_FEED_SPEED);
     self->pos = new_pos;
@@ -125,6 +132,19 @@ static void respawn_feed() {
             return;
         }
     }
+}
+
+static void renew_shark(Shark_s *self) {
+    log_info("renew_shark");
+    float radius = camera_height()>camera_width()?camera_height() : camera_width();
+    vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 64, radius + 128));
+    vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
+    speed = vec2_normalize(speed);
+//    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
+    speed = vec2_normalize(speed);
+    speed = vec2_scale(speed, 30.0);
+    self->pos = new_pos;
+    self->speed = speed;
 }
 
 void spawn_init() {
@@ -150,6 +170,12 @@ void spawn_init() {
         feed.feed[i] = new_feed(random_euler_pos(CAMERA_SIZE * 5 / 6, CAMERA_SIZE * 2));
     }
     feed.feed_size = FEED_MAX;
+
+    for(int i=0; i<SHARK_MAX; i++) {
+        shark.shark[i] = new_shark(vec2_set(FLT_MAX));
+    }
+    shark.shark_size = SHARK_MAX;
+
 }
 
 
@@ -171,4 +197,12 @@ void spawn_update(float dtime) {
             renew_feed(&feed.feed[i]);
         }
     }
+
+//    L.shark_time += dtime;
+//    if (L.shark_time > 5.0) {
+//        L.shark_time -= 5.0;
+//        static int sh_idx = 0;
+//        renew_shark(&shark.shark[sh_idx]);
+//        sh_idx = (sh_idx+1) % SHARK_MAX;
+//    }
 }

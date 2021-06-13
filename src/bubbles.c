@@ -23,11 +23,12 @@ void bubbles_init() {
                                   r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 1))
                                   );
 
+    float radius = hudcamera_height() > hudcamera_width() ? hudcamera_height() : hudcamera_width();
     for(int i=0; i<L.ro.num; i++) {
         L.ro.rects[i].speed.y = 10;
         L.ro.rects[i].pose = u_pose_new(
-                sca_random_range(hudcamera_left()-img.cols/2, hudcamera_right()+img.cols/2),
-                hudcamera_bottom()-img.rows/2,
+                sca_random_noise(0, radius),
+                -radius,
                 img.cols, img.rows
                 );
         L.ro.rects[i].start_time = sca_random_range(-MAX_TIME, 0);

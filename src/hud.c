@@ -57,9 +57,9 @@ static void update_fish(float dtime) {
                   sca_floor(camera_top() - (32 + 12) / 2),
                   1, 1);
 
-    if(L.fish_collected < 5) {
+    if(L.fish_collected < 3) {
         ro_text_set_color(&L.min_info, (vec4) {{0.7, 0.1, 0.1, 1.0}});
-    } else if(L.fish_collected == 5) {
+    } else if(L.fish_collected == 3) {
         ro_text_set_color(&L.min_info, (vec4) {{0.7, 0.7, 0.1, 1.0}});
     } else {
         ro_text_set_color(&L.min_info, (vec4) {{0.1, 0.7, 0.1, 1.0}});
@@ -102,7 +102,7 @@ void hud_init() {
     ro_text_set_color(&L.fish_cnt, R_COLOR_BLACK);
 
     L.min_info = ro_text_new_font55(8, hudcamera.gl);
-    ro_text_set_text(&L.min_info, "min 5");
+    ro_text_set_text(&L.min_info, "min 3");
     ro_text_set_color(&L.min_info, R_COLOR_BLACK);
     
     L.feed_icon = ro_single_new(hudcamera.gl, r_texture_new_file(1, 4, "res/food.png"));
