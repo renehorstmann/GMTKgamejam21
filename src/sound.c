@@ -3,6 +3,7 @@
 #include "sound.h"
 
 static struct {
+    Mix_Chunk *activate;
     Mix_Chunk *feed;
     Mix_Chunk *shark;
     Mix_Chunk *gameover;
@@ -11,6 +12,12 @@ static struct {
 void sound_init() {
     if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
         log_warn("sound not working");
+        return;
+    }
+
+    L.activate = Mix_LoadWAV("res/sound_activate.wav");
+    if (!L.activate) {
+        log_warn("failed to load activate");
         return;
     }
 
@@ -34,11 +41,18 @@ void sound_init() {
 
     Mix_Chunk *bubbles = Mix_LoadWAV("res/sound_bubbles.wav");
     if (bubbles) {
-        log_warn("failed to load bubbles");
+        log_warn("failed to load bubbles: %s", Mix_GetError());
         return;
     }
 
     if (Mix_PlayChannel(-1, bubbles, -1) == -1) {
+        log_warn("failed to play");
+        return;
+    }
+}
+
+void sound_play_activate() {
+    if (Mix_PlayChannel(-1, L.activate, 0) == -1) {
         log_warn("failed to play");
         return;
     }

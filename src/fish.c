@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "pixelparticles.h"
 #include "feed.h"
+#include "sound.h"
 #include "fish.h"
 
 #define FRAMES 4
@@ -347,6 +348,8 @@ void fish_catch_alone(int idx) {
 
     fish.last_catched_idx = fish.swarmed_size;
     fish.swarmed_size++;
+
+    sound_play_activate();
 }
 
 

@@ -3,6 +3,8 @@
 
 void sound_init();
 
+void sound_play_activate();
+
 void sound_play_feed();
 
 void sound_play_shark();
