@@ -197,11 +197,6 @@ static bool check_feed(int fish_idx, float dtime) {
 
     vec2 dir = vec2_normalize(vec2_sub_vec(feed_pos, fish_pos));
     fish.swarmed[fish_idx].set_speed = vec2_scale(dir, SPEED_FEED);
-    vec2_print(feed_pos);
-    printf(" : ");
-    vec2_print(fish_pos);
-    printf(" : ");
-    vec2_println(fish.swarmed[fish_idx].set_speed);
     return true;
 }
 

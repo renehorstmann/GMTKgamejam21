@@ -15,6 +15,7 @@ typedef struct {
 struct FeedGlobals_s {
     Feed_s feed[FEED_MAX];
     int feed_size;
+    int eaten;
 };
 extern struct FeedGlobals_s feed;
 

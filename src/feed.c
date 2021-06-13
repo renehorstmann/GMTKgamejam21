@@ -73,8 +73,18 @@ void feed_render() {
 }
 
 void feed_eat(Feed_s *self, float time) {
+    if(self->size <= 0)
+        return;
+
+    float prev_size = self->size;
     self->size -= EAT_SIZE_TIME * time;
     if(self->size<=0) {
+        feed.eaten++;
+        for(int i=0; i<5; i++)
+            emit_particles(self->pos.x, self->pos.y, self->color.rgb);
+    }
+
+    if(sca_mod(prev_size, 0.5) < sca_mod(self->size, 0.5)) {
         emit_particles(self->pos.x, self->pos.y, self->color.rgb);
     }
 }
