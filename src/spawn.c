@@ -11,11 +11,16 @@
 #include "cameractrl.h"
 #include "spawn.h"
 
-#define RESPAWN_FISH_TIME 5.0
+#define RESPAWN_FISH_TIME 10.0
 #define RESPAWN_FISH_SPEED 20.0
 
 #define RESPAWN_FEED_TIME 1.0
 #define RESPAWN_FEED_SPEED 10.0
+
+#define START_FISHS 6
+#define START_NEAR_FISHS 2
+#define FEED_SIZE_MIN 5
+#define FEED_SIZE_MAX 10
 
 static struct {
     float fish_time;
@@ -71,7 +76,7 @@ static Feed_s new_feed(vec2 pos) {
     return (Feed_s) {
             .pos = pos,
             .color = color_feed(),
-            .size = sca_random_range(2, 5)
+            .size = sca_random_range(FEED_SIZE_MIN, FEED_SIZE_MAX)
     };
 }
 
@@ -102,7 +107,7 @@ static void renew_feed(Feed_s *self) {
     speed = vec2_scale(speed, RESPAWN_FEED_SPEED);
     self->pos = new_pos;
     self->speed = speed;
-    self->size = sca_random_range(2, 5);
+    self->size = sca_random_range(FEED_SIZE_MIN, FEED_SIZE_MAX);
 }
 
 static void respawn_feed() {
@@ -120,16 +125,18 @@ void spawn_init() {
 
     srand(time(NULL));
 
-    fish.swarmed[0] = new_fish(vec2_set(0));
-    fish.swarmed_size = 1;
+    fish.swarmed_size = START_FISHS;
+    fish.alone_size = FISH_MAX - START_FISHS;
 
-    for (int i = 0; i < 3; i++) {
+    for(int i=0; i<START_FISHS; i++) {
+        fish.swarmed[i] = new_fish(random_euler_pos(16, 32));
+    }
+    for (int i = 0; i < START_NEAR_FISHS; i++) {
         fish.alone[i] = new_fish(random_euler_pos(96, CAMERA_SIZE / 2));
     }
-    for (int i = 3; i < FISH_MAX - 1; i++) {
+    for (int i = START_NEAR_FISHS; i < fish.alone_size; i++) {
         fish.alone[i] = new_fish(random_euler_pos(CAMERA_SIZE * 5 / 6, CAMERA_SIZE * 2));
     }
-    fish.alone_size = FISH_MAX - 1;
 
 
     feed.feed[0] = new_feed(random_euler_pos(96, CAMERA_SIZE / 2));

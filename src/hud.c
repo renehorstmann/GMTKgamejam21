@@ -44,16 +44,16 @@ static void update_fish(float dtime) {
     L.fish_icon.rect.sprite.y = L.fish_time > 0 ? 1 : 0;
     L.fish_icon.rect.color.rgb = color;
     L.fish_icon.rect.pose = u_pose_new_aa(
-            sca_floor(camera_right() - 32 - 3 * 12),
+            sca_floor(camera_right() - 32 - 6 * 12),
             sca_floor(camera_top()),
             32, 32);
     L.fish_cnt.pose = u_pose_new(
-                  sca_floor(camera_right() - 3 * 12 - 2),
+                  sca_floor(camera_right() - 6 * 12 - 2),
                   sca_floor(camera_top() - (32 - 12) / 2),
                   2, 2);
-    char buf[5];
+    char buf[9];
     assume(collected >= 0 && collected < 1000, "?");
-    sprintf(buf, "x%i", collected);
+    sprintf(buf, "x%-2i/5", collected);
     ro_text_set_text(&L.fish_cnt, buf);
 }
 
@@ -71,9 +71,9 @@ static void update_feed(float dtime) {
                   sca_floor(camera_left() + 32),
                   sca_floor(camera_top() - (32 - 12) / 2),
                   2, 2);
-    char buf[5];
+    char buf[9];
     assume(collected >= 0 && collected < 1000, "?");
-    sprintf(buf, "x%i", collected);
+    sprintf(buf, "x%-7i", collected);
     ro_text_set_text(&L.feed_cnt, buf);
 }
 
@@ -85,12 +85,12 @@ static void update_feed(float dtime) {
 void hud_init() {
     L.fish_icon = ro_single_new(hudcamera.gl, r_texture_new_file(4, 2, "res/fish.png"));
 
-    L.fish_cnt = ro_text_new_font55(4, hudcamera.gl);
+    L.fish_cnt = ro_text_new_font55(8, hudcamera.gl);
     ro_text_set_color(&L.fish_cnt, R_COLOR_BLACK);
     
     L.feed_icon = ro_single_new(hudcamera.gl, r_texture_new_file(1, 4, "res/food.png"));
 
-    L.feed_cnt = ro_text_new_font55(4, hudcamera.gl);
+    L.feed_cnt = ro_text_new_font55(8, hudcamera.gl);
     ro_text_set_color(&L.feed_cnt, R_COLOR_BLACK);
 
 }
