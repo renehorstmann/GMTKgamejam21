@@ -279,8 +279,6 @@ void fish_init() {
 void fish_update(float dtime) {
     assert(fish.swarmed_size + fish.alone_size <= FISH_MAX);
 
-    swarm_center();
-
     if (L.move.active < 0) {
         L.move.ring_ro.rect.pose = u_pose_new_hidden();
     } else {
@@ -289,11 +287,14 @@ void fish_update(float dtime) {
         active_code();
     }
 
+    if(fish.swarmed_size>0) {
+        swarm_center();
 
-    for (int i = 0; i < fish.swarmed_size; i++) {
-        if (i == L.move.active)
-            continue;
-        swarm_code(i, dtime);
+        for (int i = 0; i < fish.swarmed_size; i++) {
+            if (i == L.move.active)
+                continue;
+            swarm_code(i, dtime);
+        }
     }
 
     for (int i = 0; i < fish.swarmed_size; i++) {
@@ -341,6 +342,9 @@ void fish_eat(int idx, bool swarmed) {
     Fish_s eaten;
     if(swarmed) {
         assert(idx < fish.swarmed_size);
+        if(idx == L.move.active)
+            L.move.active = -1;
+
         eaten = fish.swarmed[idx];
         fish.swarmed_size--;
         for(int i=idx; i<fish.swarmed_size; i++) {

@@ -5,6 +5,7 @@
 #include "mathc/utils/color.h"
 #include "camera.h"
 #include "pixelparticles.h"
+#include "hud.h"
 #include "feed.h"
 
 #define EAT_SIZE_TIME 1.0
@@ -83,6 +84,7 @@ void feed_eat(Feed_s *self, float time) {
     self->size -= EAT_SIZE_TIME * time;
     if(self->size<=0) {
         feed.eaten++;
+        hud_score();
         for(int i=0; i<5; i++)
             emit_particles(self->pos.x, self->pos.y, self->color.rgb);
     }

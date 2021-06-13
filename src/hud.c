@@ -29,6 +29,10 @@ static struct {
     RoSingle feed_icon;
     RoText feed_cnt;
     int feed_collected;
+
+    int score;
+    RoText score_cnt;
+    vec3 score_hsv;
 } L;
 
 
@@ -90,6 +94,22 @@ static void update_feed(float dtime) {
     ro_text_set_text(&L.feed_cnt, buf);
 }
 
+static void update_score(float dtime) {
+    char buf[33];
+    sprintf(buf, "SCORE %-i", L.score);
+    vec2 size = ro_text_set_text(&L.score_cnt, buf);
+    L.score_cnt.pose = u_pose_new(
+            sca_floor(-size.x/2),
+            sca_floor(camera_top() - (32 - 18) / 2),
+            1, 2);
+
+//    L.score_hsv.v0 = sca_mod(L.score_hsv.v0 + 60 * dtime, 180);
+//    vec4 color;
+//    color.rgb = vec3_hsv2rgb(L.score_hsv);
+//    color.a = 1;
+//    ro_text_set_color(&L.score_cnt, color);
+}
+
 
 //
 // public
@@ -110,6 +130,10 @@ void hud_init() {
     L.feed_cnt = ro_text_new_font55(8, hudcamera.gl);
     ro_text_set_color(&L.feed_cnt, R_COLOR_BLACK);
 
+    L.score_cnt = ro_text_new_font55(32, hudcamera.gl);
+    ro_text_set_color(&L.score_cnt, R_COLOR_BLACK);
+    L.score_hsv.v1 = 0.3;
+    L.score_hsv.v2 = 1.0;
 }
 
 void hud_kill() {
@@ -123,6 +147,7 @@ void hud_kill() {
 void hud_update(float dtime) {
     update_fish(dtime);
     update_feed(dtime);
+    update_score(dtime);
 }
 
 void hud_render() {
@@ -132,4 +157,10 @@ void hud_render() {
 
     ro_single_render(&L.feed_icon);
     ro_text_render(&L.feed_cnt);
+
+    ro_text_render(&L.score_cnt);
+}
+
+void hud_score() {
+    L.score += 100 * fish.swarmed_size;
 }

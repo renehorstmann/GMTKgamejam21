@@ -15,6 +15,7 @@
 #include "shark.h"
 #include "spawn.h"
 #include "hud.h"
+#include "dead.h"
 
 static void main_loop(float delta_time);
 
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
     shark_init();
     spawn_init();
     hud_init();
+    dead_init();
 
 
 
@@ -71,6 +73,7 @@ static void main_loop(float delta_time) {
     shark_update(delta_time);
     spawn_update(delta_time);
     hud_update(delta_time);
+    dead_update(delta_time);
 
     // scripts
     cameractrl.in.dst = fish_swarm_center();
@@ -88,6 +91,7 @@ static void main_loop(float delta_time) {
     shark_render();
     bubbles_render();
 
+    dead_render();
     hud_render();
 
 

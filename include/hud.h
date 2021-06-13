@@ -9,5 +9,6 @@ void hud_update(float dtime);
 
 void hud_render();
 
+void hud_score();
 
 #endif //GMTKJAM21_HUD_H
