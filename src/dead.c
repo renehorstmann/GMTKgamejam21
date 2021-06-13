@@ -8,7 +8,7 @@
 
 
 #define RESCUE_TIME 5.0
-#define TEXT_SIZE 4.0
+#define TEXT_SIZE 3.0
 
 static struct {
    RoSingle ro;

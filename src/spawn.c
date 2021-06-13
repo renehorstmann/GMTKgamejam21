@@ -226,7 +226,7 @@ void spawn_init() {
     }
     shark.shark_size = SHARK_MAX;
     L.shark_time = RESPAWN_SHARK_TIME_START * 0.75;
-    L.game_time = 120;
+    L.game_time = 0;
 }
 
 
