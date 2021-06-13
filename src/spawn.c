@@ -17,7 +17,7 @@
 #define RESPAWN_FEED_TIME 1.0
 #define RESPAWN_FEED_SPEED 10.0
 
-#define START_FISHS 6
+#define START_FISHS 3
 #define START_NEAR_FISHS 2
 #define FEED_SIZE_MIN 5
 #define FEED_SIZE_MAX 10
@@ -87,7 +87,10 @@ static void respawn_fish() {
         if (!u_pose_aa_contains(border, fish.alone[i].pos)) {
             log_info("respawn_fish -> found");
             vec2 new_pos = vec2_add_vec(cameractrl.pos, random_offscreen_pos(64));
+            new_pos = vec2_add_vec(new_pos, vec2_random_noise(0, 64));
             vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
+            speed = vec2_normalize(speed);
+            speed = vec2_add_vec(speed, vec2_random_noise(0, 0.25));
             speed = vec2_normalize(speed);
             speed = vec2_scale(speed, RESPAWN_FISH_SPEED);
             fish.alone[i].pos = new_pos;
@@ -102,7 +105,10 @@ static void respawn_fish() {
 static void renew_feed(Feed_s *self) {
     log_info("renew_feed");
     vec2 new_pos = vec2_add_vec(cameractrl.pos, random_offscreen_pos(64));
+    new_pos = vec2_add_vec(new_pos, vec2_random_noise(0, 64));
     vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
+    speed = vec2_normalize(speed);
+    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.25));
     speed = vec2_normalize(speed);
     speed = vec2_scale(speed, RESPAWN_FEED_SPEED);
     self->pos = new_pos;

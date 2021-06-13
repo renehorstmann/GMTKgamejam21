@@ -64,6 +64,9 @@ void feed_update(float dtime) {
         L.ro.rects[i].pose = u_pose_new(feed.feed[i].pos.x, feed.feed[i].pos.y, 16, 16);
         L.ro.rects[i].color = feed.feed[i].color;
     }
+    for(int i=feed.feed_size; i<FEED_MAX; i++) {
+        L.ro.rects[i].pose = u_pose_new_hidden();
+    }
 
     ro_batch_update(&L.ro);
 }

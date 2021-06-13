@@ -12,6 +12,7 @@
 #include "bubbles.h"
 #include "fish.h"
 #include "feed.h"
+#include "shark.h"
 #include "spawn.h"
 #include "hud.h"
 
@@ -38,6 +39,7 @@ int main(int argc, char **argv) {
     bubbles_init();
     fish_init();
     feed_init();
+    shark_init();
     spawn_init();
     hud_init();
 
@@ -66,6 +68,7 @@ static void main_loop(float delta_time) {
     bubbles_update(delta_time);
     fish_update(delta_time);
     feed_update(delta_time);
+    shark_update(delta_time);
     spawn_update(delta_time);
     hud_update(delta_time);
 
@@ -82,6 +85,7 @@ static void main_loop(float delta_time) {
     pixelparticles_render();
     feed_render();
     fish_render();
+    shark_render();
     bubbles_render();
 
     hud_render();

@@ -22,6 +22,7 @@
 static struct {
     RoSingle fish_icon;
     RoText fish_cnt;
+    RoText min_info;
     float fish_time;
     int fish_collected;
     
@@ -44,16 +45,28 @@ static void update_fish(float dtime) {
     L.fish_icon.rect.sprite.y = L.fish_time > 0 ? 1 : 0;
     L.fish_icon.rect.color.rgb = color;
     L.fish_icon.rect.pose = u_pose_new_aa(
-            sca_floor(camera_right() - 32 - 6 * 12),
+            sca_floor(camera_right() - 32 - 4 * 12),
             sca_floor(camera_top()),
             32, 32);
     L.fish_cnt.pose = u_pose_new(
-                  sca_floor(camera_right() - 6 * 12 - 2),
+                  sca_floor(camera_right() - 4 * 12 - 2),
                   sca_floor(camera_top() - (32 - 12) / 2),
                   2, 2);
+    L.min_info.pose = u_pose_new(
+                  sca_floor(camera_right() - 4 * 12 - 2),
+                  sca_floor(camera_top() - (32 + 12) / 2),
+                  1, 1);
+
+    if(L.fish_collected < 5) {
+        ro_text_set_color(&L.min_info, (vec4) {{0.7, 0.1, 0.1, 1.0}});
+    } else if(L.fish_collected == 5) {
+        ro_text_set_color(&L.min_info, (vec4) {{0.7, 0.7, 0.1, 1.0}});
+    } else {
+        ro_text_set_color(&L.min_info, (vec4) {{0.1, 0.7, 0.1, 1.0}});
+    }
     char buf[9];
     assume(collected >= 0 && collected < 1000, "?");
-    sprintf(buf, "x%-2i/5", collected);
+    sprintf(buf, "x%-2i", collected);
     ro_text_set_text(&L.fish_cnt, buf);
 }
 
@@ -87,6 +100,10 @@ void hud_init() {
 
     L.fish_cnt = ro_text_new_font55(8, hudcamera.gl);
     ro_text_set_color(&L.fish_cnt, R_COLOR_BLACK);
+
+    L.min_info = ro_text_new_font55(8, hudcamera.gl);
+    ro_text_set_text(&L.min_info, "min 5");
+    ro_text_set_color(&L.min_info, R_COLOR_BLACK);
     
     L.feed_icon = ro_single_new(hudcamera.gl, r_texture_new_file(1, 4, "res/food.png"));
 
@@ -111,7 +128,8 @@ void hud_update(float dtime) {
 void hud_render() {
     ro_single_render(&L.fish_icon);
     ro_text_render(&L.fish_cnt);
-    
+    ro_text_render(&L.min_info);
+
     ro_single_render(&L.feed_icon);
     ro_text_render(&L.feed_cnt);
 }
