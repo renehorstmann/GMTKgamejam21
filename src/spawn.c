@@ -15,7 +15,7 @@
 #define RESPAWN_FISH_TIME 10.0
 #define RESPAWN_FISH_SPEED 20.0
 
-#define RESPAWN_FEED_TIME 1.0
+#define RESPAWN_FEED_TIME 5.0
 #define RESPAWN_FEED_SPEED 10.0
 
 #define START_FISHS 3
@@ -62,6 +62,34 @@ static vec2 random_euler_pos(float min, float max) {
     return vec2_scale((vec2) {{sca_cos(angle), sca_sin(angle)}}, distance);
 }
 
+static vec4 random_spawn_pos_dir(float offset) {
+    vec2 pos;
+
+    if(rand()%2==0) {
+        // left or right
+        pos.x = rand()%2==0? camera_left()-offset : camera_right()+offset;
+        pos.y = sca_random_range(camera_bottom(), camera_top());
+    } else {
+        // top or bottom
+        pos.x = sca_random_range(camera_left(), camera_right());
+        pos.y = rand()%2==0? camera_bottom()-offset : camera_top()+offset;
+    }
+
+    vec2 dst = {{
+                        sca_random_range(camera_left()+offset, camera_right()-offset),
+                        sca_random_range(camera_bottom()+offset, camera_top()-offset),
+    }};
+
+    vec2 dir = vec2_normalize(vec2_sub_vec(dst, pos));
+
+    pos = vec2_add_vec(pos, cameractrl.pos);
+
+    vec4 pos_dir;
+    pos_dir.xy = pos;
+    pos_dir.zw = dir;
+    return pos_dir;
+}
+
 static Fish_s new_fish(vec2 pos) {
     return (Fish_s) {
             .pos = pos,
@@ -90,19 +118,19 @@ static Shark_s new_shark(vec2 pos) {
 static void respawn_fish() {
     log_info("respawn_fish");
     mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 32, camera_height() + 32);
-    float radius = camera_height()>camera_width()?camera_height() : camera_width();
+    static int last = 0;
     for (int i = 0; i < fish.alone_size; i++) {
-        if (!u_pose_aa_contains(border, fish.alone[i].pos)) {
+        int idx = (i + last) % fish.alone_size;
+        if (!u_pose_aa_contains(border, fish.alone[idx].pos)) {
             log_info("respawn_fish -> found");
-            vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 32, radius + 64));
-            vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
-            speed = vec2_normalize(speed);
-            speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
-            speed = vec2_normalize(speed);
+            vec4 pos_dir = random_spawn_pos_dir(16);
+            vec2 new_pos = pos_dir.xy;
+            vec2 speed = pos_dir.zw;
             speed = vec2_scale(speed, RESPAWN_FISH_SPEED);
-            fish.alone[i].pos = new_pos;
-            fish.alone[i].speed = speed;
-            fish.alone[i].set_speed = speed;
+            fish.alone[idx].pos = new_pos;
+            fish.alone[idx].speed = speed;
+            fish.alone[idx].set_speed = speed;
+            last = idx;
             return;
         }
     }
@@ -111,12 +139,9 @@ static void respawn_fish() {
 
 static void renew_feed(Feed_s *self) {
     log_info("renew_feed");
-    float radius = camera_height()>camera_width()?camera_height() : camera_width();
-    vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 32, radius + 64));
-    vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
-    speed = vec2_normalize(speed);
-    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
-    speed = vec2_normalize(speed);
+    vec4 pos_dir = random_spawn_pos_dir(8);
+    vec2 new_pos = pos_dir.xy;
+    vec2 speed = pos_dir.zw;
     speed = vec2_scale(speed, RESPAWN_FEED_SPEED);
     self->pos = new_pos;
     self->speed = speed;
@@ -126,9 +151,12 @@ static void renew_feed(Feed_s *self) {
 static void respawn_feed() {
     log_info("respawn_feed");
     mat4 border = u_pose_new(cameractrl.pos.x, cameractrl.pos.y, camera_width() + 16, camera_height() + 16);
+    static int last;
     for (int i = 0; i < feed.feed_size; i++) {
-        if (!u_pose_aa_contains(border, feed.feed[i].pos)) {
-            renew_feed(&feed.feed[i]);
+        int idx = (i + last) % feed.feed_size;
+        if (!u_pose_aa_contains(border, feed.feed[idx].pos)) {
+            renew_feed(&feed.feed[idx]);
+            last = idx;
             return;
         }
     }
@@ -136,12 +164,9 @@ static void respawn_feed() {
 
 static void renew_shark(Shark_s *self) {
     log_info("renew_shark");
-    float radius = camera_height()>camera_width()?camera_height() : camera_width();
-    vec2 new_pos = vec2_add_vec(cameractrl.pos, random_euler_pos(radius + 64, radius + 128));
-    vec2 speed = vec2_sub_vec(cameractrl.pos, new_pos);
-    speed = vec2_normalize(speed);
-//    speed = vec2_add_vec(speed, vec2_random_noise(0, 0.5));
-    speed = vec2_normalize(speed);
+    vec4 pos_dir = random_spawn_pos_dir(32);
+    vec2 new_pos = pos_dir.xy;
+    vec2 speed = pos_dir.zw;
     speed = vec2_scale(speed, 30.0);
     self->pos = new_pos;
     self->speed = speed;
@@ -167,7 +192,7 @@ void spawn_init() {
 
     feed.feed[0] = new_feed(random_euler_pos(96, CAMERA_SIZE / 2));
     for (int i = 1; i < FEED_MAX; i++) {
-        feed.feed[i] = new_feed(random_euler_pos(CAMERA_SIZE * 5 / 6, CAMERA_SIZE * 2));
+        feed.feed[i] = new_feed(vec2_set(FLT_MAX));
     }
     feed.feed_size = FEED_MAX;
 
@@ -198,11 +223,11 @@ void spawn_update(float dtime) {
         }
     }
 
-//    L.shark_time += dtime;
-//    if (L.shark_time > 5.0) {
-//        L.shark_time -= 5.0;
-//        static int sh_idx = 0;
-//        renew_shark(&shark.shark[sh_idx]);
-//        sh_idx = (sh_idx+1) % SHARK_MAX;
-//    }
+    L.shark_time += dtime;
+    if (L.shark_time > 5.0) {
+        L.shark_time -= 5.0;
+        static int sh_idx = 0;
+        renew_shark(&shark.shark[sh_idx]);
+        sh_idx = (sh_idx+1) % SHARK_MAX;
+    }
 }
