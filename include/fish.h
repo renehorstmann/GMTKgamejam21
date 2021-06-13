@@ -46,5 +46,7 @@ vec2 fish_swarm_center();
 
 void fish_catch_alone(int idx);
 
+void fish_eat(int idx, bool swarmed);
+
 
 #endif //GMTKJAM21_FISH_H

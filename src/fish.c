@@ -334,3 +334,23 @@ void fish_catch_alone(int idx) {
     fish.last_catched_idx = fish.swarmed_size;
     fish.swarmed_size++;
 }
+
+
+void fish_eat(int idx, bool swarmed) {
+    Fish_s eaten;
+    if(swarmed) {
+        eaten = fish.swarmed[idx];
+        fish.swarmed_size--;
+        for(int i=idx; i<fish.swarmed_size; i++) {
+            fish.swarmed[i] = fish.swarmed[i+1];
+        }
+    } else {
+        eaten = fish.alone[idx];
+        fish.alone_size--;
+        for(int i=idx; i<fish.alone_size; i++) {
+            fish.alone[i] = fish.alone[i+1];
+        }
+    }
+    eaten.pos = vec2_set(FLT_MAX);
+    fish.alone[fish.alone_size++] = eaten;
+}

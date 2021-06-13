@@ -70,7 +70,8 @@ void pixelparticles_add(const rParticleRect_s *particles, int n) {
     if (L.next >= L.ro.num)
         L.next = 0;
 
-    ro_particle_update_sub(&L.ro, start_idx, n);
+//    ro_particle_update_sub(&L.ro, start_idx, n);
+    ro_particle_update(&L.ro);
 }
 
 void pixelparticles_add_dirt(vec2 pos, vec2 dir, uColor_s color, int n) {

@@ -12,6 +12,7 @@ typedef struct {
 
     struct {
         float animate_time;
+        float mouth_time;
     } L;
 } Shark_s;
 
