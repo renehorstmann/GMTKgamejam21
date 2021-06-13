@@ -100,7 +100,7 @@ static void update_score(float dtime) {
     vec2 size = ro_text_set_text(&L.score_cnt, buf);
     L.score_cnt.pose = u_pose_new(
             sca_floor(-size.x/2),
-            sca_floor(camera_top() - (32 - 18) / 2),
+            sca_floor(camera_top() - (32 - 12) / 2),
             1, 2);
 
 //    L.score_hsv.v0 = sca_mod(L.score_hsv.v0 + 60 * dtime, 180);
