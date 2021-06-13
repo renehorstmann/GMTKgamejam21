@@ -16,10 +16,10 @@ static void main_loop(float delta_time);
 
 
 int main(int argc, char **argv) {
-    log_info("gmtkjam21");
+    log_info("Swarm GMTK21");
 
     // init e (environment)
-    e_window_init("gmtkjam21");
+    e_window_init("Swarm GMTK21");
     e_input_init();
     e_gui_init();
 
