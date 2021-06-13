@@ -5,6 +5,9 @@ A mini game in which you should survive with your small fish swarm.
 To survive you need at least three fishs in the swarm.
 Eat food to get more score points.
 
+## Livedemo
+Emscripten compiled [live demo](https://renehorstmann.github.io/gmtk21/)
+
 ## engine
 Based on [some](http://github.com/renehorstmann/some) framework.
 
