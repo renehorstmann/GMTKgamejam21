@@ -13,4 +13,35 @@ Based on [some](http://github.com/renehorstmann/some) framework.
 
 
 # compile in emscripten:
-`emcc -I../include/ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s FULL_ES3=1 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file ../res -s ALLOW_MEMORY_GROWTH=1 -DOPTION_GLES -DOPTION_SDL ../src/e/*.c ../src/p/*.c ../src/r/*.c ../src/u/*.c ../src/*.c -o index.html`
+```sh
+mkdir web && cd web
+```
+
+```sh
+emcc -I../include/ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s FULL_ES3=1 -s SDL2_IMAGE_FORMATS='["png"]' --preload-file ../res -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s EXIT_RUNTIME=1 -DOPTION_GLES -DOPTION_SDL ../src/e/*.c ../src/p/*.c ../src/r/*.c ../src/u/*.c ../src/*.c -o index.html
+```
+
+Add the following changes to the generated index.html:
+```html
+<style>
+  #canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: block;
+  }
+</style>
+<script>
+    function set_error_img() {
+        var newContent = '<!DOCTYPE html><html><body style="background-color:black;"><h1 style="color:white;">Potato Browsers are not supported!</h1><p style="color:silver;">Full WebGL2.0 is needed!</p></body></html>';
+        document.open();
+        document.write(newContent);
+        document.close();
+    }
+</script>
+```
+This will let Emscripten run in fullscreen and display an error text, if the app / game is not able to run (WebGL2.0 support missing)

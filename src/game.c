@@ -29,7 +29,7 @@ static void init() {
     dead_init(L.input_ref);
 }
 
-static void kill() {
+static void game_kill() {
     cameractrl_kill();
     background_kill();
     pixelparticles_kill();
@@ -80,6 +80,6 @@ void game_render() {
 }
 
 void game_reset(eInput *input, rRender *render) {
-    kill();
+    game_kill();
     init();
 }
