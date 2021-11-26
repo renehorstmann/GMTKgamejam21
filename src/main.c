@@ -12,6 +12,14 @@
 
 #define UPDATES_PER_SECOND 200
 
+static struct {
+    eWindow *window;
+    eInput *input;
+    eGui *gui;
+    rRender *render;
+} L;
+
+
 static void main_loop(float delta_time);
 
 
@@ -19,24 +27,37 @@ int main(int argc, char **argv) {
     log_info("Swarm GMTK21");
 
     // init e (environment)
-    e_window_init("Swarm GMTK21");
-    e_input_init();
-    e_gui_init();
+    L.window = e_window_new("Swarm GMTK21");
+    L.input = e_input_new(L.window);
+    L.gui = e_gui_new(L.window);
+
+    ivec2 window_size = e_window_get_size(L.window);
 
     // init r (render)
-    r_render_init(e_window.window);
+    L.render = r_render_new(e_window_get_sdl_window(L.window));
+
+    // the startup screen acts as loading screen and also checks for render errors
+    r_render_show_startup(L.render,
+                          window_size.x, window_size.y,
+                          1.0, // block time
+                          "Horsimann");
 
     // init systems
     camera_init();
     hudcamera_init();
+    camera_update(window_size);
+    hudcamera_update(window_size);
     sound_init();
-    game_init();
+    game_init(L.input, L.render);
 
 
 
-    e_window_main_loop(main_loop);
+    e_window_main_loop(L.window, main_loop);
 
-    e_gui_kill();
+    r_render_kill(&L.render);
+    e_gui_kill(&L.gui);
+    e_input_kill(&L.input);
+    e_window_kill(&L.window);
 
     return 0;
 }
@@ -45,12 +66,14 @@ int main(int argc, char **argv) {
 static void main_loop(float delta_time) {
     static float u_time = 0;
 
+    ivec2 window_size = e_window_get_size(L.window);
+
     // e updates
-    e_input_update();
+    e_input_update(L.input);
 
     // simulate
-    camera_update();
-    hudcamera_update();
+    camera_update(window_size);
+    hudcamera_update(window_size);
 
     // fixed update ps
     u_time += delta_time;
@@ -64,17 +87,17 @@ static void main_loop(float delta_time) {
 
 
     // render
-    r_render_begin_frame(e_window.size.x, e_window.size.y);
+    r_render_begin_frame(L.render, window_size.x, window_size.y);
 
     game_render();
 
     // uncomment to clone the current framebuffer into r_render.framebuffer_tex
-    r_render_blit_framebuffer(e_window.size.x, e_window.size.y);
+    r_render_blit_framebuffer(L.render, window_size.x, window_size.y);
 
-    e_gui_render();
+    e_gui_render(L.gui);
 
     // swap buffers
-    r_render_end_frame();
+    r_render_end_frame(L.render);
 }
 
 

@@ -1,6 +1,7 @@
 #ifndef GMTKJAM21_FISH_H
 #define GMTKJAM21_FISH_H
 
+#include "e/input.h"
 #include "mathc/types/float.h"
 
 #define FISH_MAX 24
@@ -37,7 +38,7 @@ struct FishGlobals_s {
 } ;
 extern struct FishGlobals_s fish;
 
-void fish_init();
+void fish_init(eInput *input);
 
 void fish_kill();
 

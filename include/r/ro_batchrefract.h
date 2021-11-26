@@ -22,42 +22,20 @@
 ////    defaults to fullscreen (0.5, 0.5, 0.5, 0.5)
 //
 
-#include "rhc/allocator.h"
-#include "core.h"
-#include "rect.h"
-#include "texture.h"
-#include "texture2d.h"
+#include "rhc/alloc.h"
+#include "ro_types.h"
 
-typedef struct {
-    rRect_s *rects;
-    int num;
-    const float *vp;                    // mat4
-    const float *scale;                 // float
-    const float *view_aabb;             // vec4
-    bool owns_tex_main;                 // if true, the textures will be deleted by this class
-    bool owns_tex_refraction;
-    const rTexture2D *tex_framebuffer_ptr;  // init as &r_render.framebuffer_tex
-
-    struct {
-        GLuint program;                     // shader
-        GLuint vao;                         // internal vertex array object
-        GLuint vbo;                         // internal vertex buffer object
-        rTexture tex_main;                  // used main texture
-        rTexture tex_refraction;            // used refraction texture
-        Allocator_s allocator;
-    } L;
-} RoBatchRefract;
 
 RoBatchRefract ro_batchrefract_new_a(int num,
-                                     const float *vp, const float *scale_ptr,
+                                     const float *scale_ptr,
                                      rTexture tex_main_sink, rTexture tex_refraction_sink,
-                                     Allocator_s alloc);
+                                     Allocator_i alloc);
 
 static RoBatchRefract ro_batchrefract_new(int num,
-                                          const float *vp, const float *scale_ptr,
+                                          const float *scale_ptr,
                                           rTexture tex_main_sink, rTexture tex_refraction_sink) {
-    return ro_batchrefract_new_a(num, vp, scale_ptr, tex_main_sink, tex_refraction_sink,
-                                 allocator_new_default()
+    return ro_batchrefract_new_a(num, scale_ptr, tex_main_sink, tex_refraction_sink,
+                                 rhc_allocator_new()
     );
 }
 
@@ -65,10 +43,10 @@ static RoBatchRefract ro_batchrefract_new(int num,
 void ro_batchrefract_kill(RoBatchRefract *self);
 
 // updates a subset of the batch into the gpu
-void ro_batchrefract_update_sub(RoBatchRefract *self, int offset, int size);
+void ro_batchrefract_update_sub(const RoBatchRefract *self, int offset, int size);
 
 // renders a subset of the batch
-void ro_batchrefract_render_sub(RoBatchRefract *self, int num);
+void ro_batchrefract_render_sub(const RoBatchRefract *self, int num, const mat4 *camera_mat);
 
 // resets the texture, if .owns_tex_main is true, it will delete the old texture
 void ro_batchrefract_set_texture_main(RoBatchRefract *self, rTexture tex_main_sink);
@@ -77,12 +55,12 @@ void ro_batchrefract_set_texture_main(RoBatchRefract *self, rTexture tex_main_si
 void ro_batchrefract_set_texture_refraction(RoBatchRefract *self, rTexture tex_refraction_sink);
 
 
-static void ro_batchrefract_update(RoBatchRefract *self) {
+static void ro_batchrefract_update(const RoBatchRefract *self) {
     ro_batchrefract_update_sub(self, 0, self->num);
 }
 
-static void ro_batchrefract_render(RoBatchRefract *self) {
-    ro_batchrefract_render_sub(self, self->num);
+static void ro_batchrefract_render(const RoBatchRefract *self, const mat4 *camera_mat) {
+    ro_batchrefract_render_sub(self, self->num, camera_mat);
 }
 
 

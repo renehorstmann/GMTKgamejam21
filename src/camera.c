@@ -57,13 +57,11 @@ void camera_init() {
     
     camera.matrices_p = mat4_eye();
     camera.matrices_p_inv = mat4_eye();
-
-    camera_update();
 }
 
-void camera_update() {
-    int wnd_width = e_window.size.x;
-    int wnd_height = e_window.size.y;
+void camera_update(ivec2 window_size) {
+    int wnd_width = window_size.x;
+    int wnd_height = window_size.y;
 
     float smaller_size = wnd_width < wnd_height ? wnd_width : wnd_height;
     

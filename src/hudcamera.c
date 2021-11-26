@@ -29,13 +29,11 @@ void hudcamera_init() {
     hudcamera.gl = &hudcamera.matrices.p.m00;
     hudcamera.matrices.p = mat4_eye();
     hudcamera.matrices.p_inv = mat4_eye();
-
-    hudcamera_update();
 }
 
-void hudcamera_update() {
-    int wnd_width = e_window.size.x;
-    int wnd_height = e_window.size.y;
+void hudcamera_update(ivec2 window_size) {
+    int wnd_width = window_size.x;
+    int wnd_height = window_size.y;
 
 
     float smaller_size = wnd_width < wnd_height ? wnd_width : wnd_height;

@@ -10,18 +10,23 @@
 #include "dead.h"
 #include "game.h"
 
+static struct {
+    eInput *input_ref;
+    rRender *render_ref;
+} L;
+
 static void init() {
     cameractrl_init();
-    background_init(1280, 1280, true, true, "res/background.png");
+    background_init(L.render_ref, 1280, 1280, true, true, "res/background.png");
     pixelparticles_init();
     bubbles_init();
     
-    fish_init();
+    fish_init(L.input_ref);
     feed_init();
     shark_init();
     spawn_init();
     hud_init();
-    dead_init();
+    dead_init(L.input_ref);
 }
 
 static void kill() {
@@ -38,7 +43,9 @@ static void kill() {
     dead_kill();
 }
 
-void game_init() {
+void game_init(eInput *input, rRender *render) {
+    L.input_ref = input;
+    L.render_ref = render;
     init();
 }
 
@@ -72,7 +79,7 @@ void game_render() {
     hud_render();
 }
 
-void game_reset() {
+void game_reset(eInput *input, rRender *render) {
     kill();
     init();
 }

@@ -1,6 +1,7 @@
 #include "e/input.h"
 #include "r/ro_single.h"
 #include "r/ro_batch.h"
+#include "r/texture.h"
 #include "u/pose.h"
 #include "rhc/log.h"
 #include "mathc/float.h"
@@ -43,6 +44,8 @@
 struct FishGlobals_s fish;
 
 static struct {
+    eInput *input_ref;
+
     RoBatch ro;
 
     vec2 swarm_center;
@@ -256,19 +259,18 @@ static void swarm_code(int fish_idx, float dtime) {
     fish.swarmed[fish_idx].set_speed = vec2_scale(vec2_normalize(speed), speed_value);
 }
 
-void fish_init() {
+void fish_init(eInput *input) {
+    L.input_ref = input;
     L.move.active = -1;
 
-    e_input_register_pointer_event(pointer_callback, NULL);
+    e_input_register_pointer_event(input, pointer_callback, NULL);
 
 
-    L.move.ring_ro = ro_single_new(camera.gl_main,
-                                   r_texture_new_file(1, 1, "res/ring.png"));
+    L.move.ring_ro = ro_single_new(r_texture_new_file(1, 1, "res/ring.png"));
 
     L.move.ring_ro.rect.pose = u_pose_new_hidden();
 
-    L.ro = ro_batch_new(FISH_MAX, camera.gl_main,
-                        r_texture_new_file(4, 2, "res/fish.png"));
+    L.ro = ro_batch_new(FISH_MAX, r_texture_new_file(4, 2, "res/fish.png"));
 
     for (int i = 0; i < FISH_MAX; i++) {
         L.ro.rects[i].pose = u_pose_new_hidden();
@@ -280,7 +282,7 @@ void fish_init() {
 }
 
 void fish_kill() {
-    e_input_unregister_pointer_event(pointer_callback);
+    e_input_unregister_pointer_event(L.input_ref, pointer_callback);
     ro_single_kill(&L.move.ring_ro);
     ro_batch_kill(&L.ro);
     memset(&L, 0, sizeof(L));
@@ -325,8 +327,8 @@ void fish_update(float dtime) {
 }
 
 void fish_render() {
-    ro_batch_render(&L.ro);
-    ro_single_render(&L.move.ring_ro);
+    ro_batch_render(&L.ro, (const mat4*) camera.gl_main);
+    ro_single_render(&L.move.ring_ro, (const mat4*) camera.gl_main);
 }
 
 vec2 fish_swarm_center() {

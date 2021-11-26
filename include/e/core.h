@@ -13,10 +13,18 @@
 
 #endif
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
+
+#ifdef OPTION_TTF
+#include <SDL2/SDL_ttf.h>
+#endif
+
+#ifdef OPTION_SOCKET
+#include <SDL2/SDL_net.h>
+#endif
 
 #ifndef OPTION_GLEW
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 #endif
 
 
@@ -24,6 +32,17 @@
 #include <emscripten.h>
 // #include <emscripten/html5.h>
 #endif
+
+
+static void e_exit_failure() {
+#ifdef __EMSCRIPTEN__
+    emscripten_cancel_main_loop();
+    EM_ASM(
+            set_error_img();
+            );
+#endif
+    exit(EXIT_FAILURE);
+}
 
 
 #endif //E_CORE_H

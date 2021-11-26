@@ -1,7 +1,9 @@
 #ifndef GMTKJAM21_DEAD_H
 #define GMTKJAM21_DEAD_H
 
-void dead_init();
+#include "e/input.h"
+
+void dead_init(eInput *input);
 
 void dead_kill();
 

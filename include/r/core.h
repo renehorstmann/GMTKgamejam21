@@ -11,14 +11,30 @@
 #include <GL/glew.h>
 #endif
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #ifndef OPTION_GLEW
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 #endif
 
 #include "mathc/types/float.h"
 
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+// #include <emscripten/html5.h>
+#endif
+
+
+static void r_exit_failure() {
+#ifdef __EMSCRIPTEN__
+    emscripten_cancel_main_loop();
+    EM_ASM(
+            set_error_img();
+            );
+#endif
+    exit(EXIT_FAILURE);
+}
 
 static const vec4 R_COLOR_TRANSPARENT = {{0, 0, 0, 0}};
 static const vec4 R_COLOR_BLACK = {{0, 0, 0, 1}};

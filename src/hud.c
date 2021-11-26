@@ -2,6 +2,7 @@
 #include "r/ro_single.h"
 #include "r/ro_batch.h"
 #include "r/ro_text.h"
+#include "r/texture.h"
 #include "u/pose.h"
 #include "mathc/float.h"
 #include "mathc/utils/color.h"
@@ -116,21 +117,21 @@ static void update_score(float dtime) {
 //
 
 void hud_init() {
-    L.fish_icon = ro_single_new(hudcamera.gl, r_texture_new_file(4, 2, "res/fish.png"));
+    L.fish_icon = ro_single_new(r_texture_new_file(4, 2, "res/fish.png"));
 
-    L.fish_cnt = ro_text_new_font55(8, hudcamera.gl);
+    L.fish_cnt = ro_text_new_font55(8);
     ro_text_set_color(&L.fish_cnt, R_COLOR_BLACK);
 
-    L.min_info = ro_text_new_font55(8, hudcamera.gl);
+    L.min_info = ro_text_new_font55(8);
     ro_text_set_text(&L.min_info, "min 3");
     ro_text_set_color(&L.min_info, R_COLOR_BLACK);
     
-    L.feed_icon = ro_single_new(hudcamera.gl, r_texture_new_file(1, 4, "res/food.png"));
+    L.feed_icon = ro_single_new(r_texture_new_file(1, 4, "res/food.png"));
 
-    L.feed_cnt = ro_text_new_font55(8, hudcamera.gl);
+    L.feed_cnt = ro_text_new_font55(8);
     ro_text_set_color(&L.feed_cnt, R_COLOR_BLACK);
 
-    L.score_cnt = ro_text_new_font55(32, hudcamera.gl);
+    L.score_cnt = ro_text_new_font55(32);
     ro_text_set_color(&L.score_cnt, R_COLOR_BLACK);
     L.score_hsv.v1 = 0.3;
     L.score_hsv.v2 = 1.0;
@@ -151,14 +152,14 @@ void hud_update(float dtime) {
 }
 
 void hud_render() {
-    ro_single_render(&L.fish_icon);
-    ro_text_render(&L.fish_cnt);
-    ro_text_render(&L.min_info);
+    ro_single_render(&L.fish_icon, (const mat4*) hudcamera.gl);
+    ro_text_render(&L.fish_cnt, (const mat4*) hudcamera.gl);
+    ro_text_render(&L.min_info, (const mat4*) hudcamera.gl);
 
-    ro_single_render(&L.feed_icon);
-    ro_text_render(&L.feed_cnt);
+    ro_single_render(&L.feed_icon, (const mat4*) hudcamera.gl);
+    ro_text_render(&L.feed_cnt, (const mat4*) hudcamera.gl);
 
-    ro_text_render(&L.score_cnt);
+    ro_text_render(&L.score_cnt, (const mat4*) hudcamera.gl);
 }
 
 void hud_score() {

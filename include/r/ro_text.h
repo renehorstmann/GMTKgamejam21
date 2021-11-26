@@ -6,42 +6,34 @@
 // based on a font sprite sheet and is monospaced.
 //
 
-#include "ro_batch.h"
+#include "rhc/alloc.h"
+#include "ro_types.h"
 
-// return true for a newline
-typedef bool (*ro_text_sprite_fn)(vec2 *sprite, char c);
 
-typedef struct {
-    RoBatch ro;             // internal batch to render
-    ro_text_sprite_fn sprite_fn;    // conversion function of character to sprite mapping
-    mat4 pose;              // pose (top left) for the text
-    vec2 size;              // character size
-    vec2 offset;            // offset to next character
-    const float *vp;        // mat4 camera view perspective
 
-    struct {
-        mat4 mvp;               // internal mvp as vp for the batch
-    } L;
-} RoText;
 
-RoText ro_text_new_a(int max, ro_text_sprite_fn sprite_fn, const float *vp, rTexture tex_sink, Allocator_s alloc);
+RoText ro_text_new_a(int max, ro_text_sprite_fn sprite_fn, rTexture tex_sink, Allocator_i alloc);
 
-static RoText ro_text_new(int max, ro_text_sprite_fn sprite_fn, const float *vp, rTexture tex_sink) {
-    return ro_text_new_a(max, sprite_fn, vp, tex_sink, allocator_new_default());
+static RoText ro_text_new(int max, ro_text_sprite_fn sprite_fn, rTexture tex_sink) {
+    return ro_text_new_a(max, sprite_fn, tex_sink, rhc_allocator_new());
 }
 
 // inits text with the r/font55.png sprite sheet
-RoText ro_text_new_font55(int max, const float *vp);
+RoText ro_text_new_font55(int max);
+
+
+// inits text with the r/font88.png sprite sheet
+RoText ro_text_new_font85(int max);
 
 void ro_text_kill(RoText *self);
 
-void ro_text_render(RoText *self);
+void ro_text_render(const RoText *self, const mat4 *camera_mat);
 
 // returns the used size
 vec2 ro_text_set_text(RoText *self, const char *text);
 
 // returns the size, without setting the text
-vec2 ro_text_get_size(RoText *self, const char *text);
+vec2 ro_text_get_size(const RoText *self, const char *text);
 
 void ro_text_set_color(RoText *self, vec4 color);
 

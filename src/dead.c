@@ -1,6 +1,7 @@
 #include "e/input.h"
 #include "r/ro_single.h"
 #include "r/ro_text.h"
+#include "r/texture.h"
 #include "u/pose.h"
 #include "mathc/float.h"
 #include "hudcamera.h"
@@ -15,6 +16,8 @@
 #define TEXT_SIZE 3.0
 
 static struct {
+    eInput *input_ref;
+
     RoSingle ro;
     RoSingle btn;
     RoText info;
@@ -34,24 +37,25 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
     }
 }
 
-void dead_init() {
-    e_input_register_pointer_event(pointer_callback, NULL);
+void dead_init(eInput *input) {
+    L.input_ref = input;
+    e_input_register_pointer_event(input, pointer_callback, NULL);
 
-    L.ro = ro_single_new(hudcamera.gl, r_texture_new_white_pixel());
+    L.ro = ro_single_new(r_texture_new_white_pixel());
     L.ro.rect.pose = u_pose_new(0, 0, 2048, 2048);
     L.ro.rect.color = (vec4) {{0.5, 0.1, 0.1, 0.0}};
 
-    L.btn = ro_single_new(hudcamera.gl, r_texture_new_file(2, 1, "res/retry.png"));
+    L.btn = ro_single_new(r_texture_new_file(2, 1, "res/retry.png"));
 
-    L.info = ro_text_new_font55(64, hudcamera.gl);
+    L.info = ro_text_new_font55(64);
     ro_text_set_color(&L.info, R_COLOR_BLACK);
 
-    L.credits = ro_text_new_font55(32, hudcamera.gl);
+    L.credits = ro_text_new_font55(32);
     ro_text_set_text(&L.credits, "\"swarm\" by horsimann");
 }
 
 void dead_kill() {
-    e_input_unregister_pointer_event(pointer_callback);
+    e_input_unregister_pointer_event(L.input_ref, pointer_callback);
     ro_single_kill(&L.ro);
     ro_text_kill(&L.info);
     ro_single_kill(&L.btn);
@@ -97,9 +101,9 @@ void dead_update(float dtime) {
 void dead_render() {
     if (!L.show)
         return;
-    ro_single_render(&L.ro);
-    ro_text_render(&L.info);
+    ro_single_render(&L.ro, (const mat4*) hudcamera.gl);
+    ro_text_render(&L.info, (const mat4*) hudcamera.gl);
     if (L.time <= 0)
-        ro_single_render(&L.btn);
-    ro_text_render(&L.credits);
+        ro_single_render(&L.btn, (const mat4*) hudcamera.gl);
+    ro_text_render(&L.credits, (const mat4*) hudcamera.gl);
 }

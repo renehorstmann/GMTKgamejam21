@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include "mathc/types/float.h"
+#include "mathc/types/int.h"
 
 
 #define HUDCAMERA_SIZE 240 // *4=720; *6=1080; *8=1440
@@ -25,7 +26,7 @@ extern struct HudCameraGlobals_s hudcamera;
 
 void hudcamera_init();
 
-void hudcamera_update();
+void hudcamera_update(ivec2 window_size);
 
 float hudcamera_real_pixel_per_pixel();
 

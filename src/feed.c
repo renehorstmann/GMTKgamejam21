@@ -1,4 +1,5 @@
 #include "r/ro_batch.h"
+#include "r/texture.h"
 #include "u/pose.h"
 #include "mathc/float.h"
 #include "mathc/utils/random.h"
@@ -45,7 +46,7 @@ static void emit_particles(float x, float y, vec3 color) {
 }
 
 void feed_init() {
-    L.ro = ro_batch_new(FEED_MAX, camera.gl_main, r_texture_new_file(1, 4, "res/food.png"));
+    L.ro = ro_batch_new(FEED_MAX, r_texture_new_file(1, 4, "res/food.png"));
 
     for (int i = 0; i < FEED_MAX; i++) {
         L.ro.rects[i].pose = u_pose_new_hidden();
@@ -80,7 +81,7 @@ void feed_update(float dtime) {
 }
 
 void feed_render() {
-    ro_batch_render(&L.ro);
+    ro_batch_render(&L.ro, (const mat4*) camera.gl_main);
 }
 
 void feed_eat(Feed_s *self, float time) {

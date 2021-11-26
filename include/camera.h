@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "mathc/types/float.h"
+#include "mathc/types/int.h"
 
 
 #define CAMERA_SIZE 240 // *4=720; *6=1080; *8=1440
@@ -40,7 +41,7 @@ extern struct CameraGlobals_s camera;
 
 void camera_init();
 
-void camera_update();
+void camera_update(ivec2 window_size);
 
 float camera_real_pixel_per_pixel();
 

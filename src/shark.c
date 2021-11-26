@@ -1,4 +1,5 @@
 #include "r/ro_batch.h"
+#include "r/texture.h"
 #include "u/pose.h"
 #include "mathc/float.h"
 #include "mathc/utils/random.h"
@@ -92,8 +93,7 @@ static void check_eat_fish(Shark_s *self) {
 }
 
 void shark_init() {
-    L.ro = ro_batch_new(SHARK_MAX, camera.gl_main,
-                        r_texture_new_file(4, 2, "res/shark.png"));
+    L.ro = ro_batch_new(SHARK_MAX, r_texture_new_file(4, 2, "res/shark.png"));
 
     for(int i=0; i<SHARK_MAX; i++) {
         L.ro.rects[i].pose = u_pose_new_hidden();
@@ -120,6 +120,6 @@ void shark_update(float dtime) {
 }
 
 void shark_render() {
-    ro_batch_render(&L.ro);
+    ro_batch_render(&L.ro, (const mat4*) camera.gl_main);
 }
 
