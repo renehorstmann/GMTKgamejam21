@@ -79,7 +79,7 @@ void game_render() {
     hud_render();
 }
 
-void game_reset(eInput *input, rRender *render) {
+void game_reset() {
     game_kill();
     init();
 }
