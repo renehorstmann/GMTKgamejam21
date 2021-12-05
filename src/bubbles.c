@@ -19,7 +19,7 @@ void bubbles_init() {
     uImage img = u_image_new_file(2, "res/bubble.png");
     assume(u_image_valid(img), "bubble not found?");
 
-    L.ro = ro_particlerefract_new(BUBBLES_SIZE, camera.gl_scale,
+    L.ro = ro_particlerefract_new(BUBBLES_SIZE,
                                   r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 0)),
                                   r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 1))
                                   );
@@ -54,5 +54,5 @@ void bubbles_update(float dtime) {
 }
 
 void bubbles_render() {
-    ro_particlerefract_render(&L.ro, L.time, (const mat4*) hudcamera.gl);
+    ro_particlerefract_render(&L.ro, L.time, (const mat4*) hudcamera.gl, *camera.gl_scale, NULL, NULL);
 }
