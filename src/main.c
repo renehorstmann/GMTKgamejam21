@@ -1,8 +1,4 @@
-#include "e/e.h"
-#include "r/r.h"
-#include "u/u.h"
-#include "rhc/rhc.h"
-#include "mathc/mathc.h"
+#include "e/simple.h"
 
 #include "camera.h"
 #include "hudcamera.h"
@@ -41,7 +37,8 @@ static void render(eSimple *simple, ivec2 window_size) {
 
 int main(int argc, char **argv) {
     e_simple_start("Swarm GMTK21", "Horsimann",
-                   UPDATES_PER_SECOND, // updates/s, <=0 to turn off and use fps
+                   1.0f,   // startup block time (the time in which "Horsimann" is displayed at startup)
+                   UPDATES_PER_SECOND,
                    init, update, render);
     return 0;
 }
