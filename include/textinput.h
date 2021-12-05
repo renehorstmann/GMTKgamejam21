@@ -2,7 +2,6 @@
 #define SOME_TEXTINPUT_H
 
 #include "r/ro_types.h"
-#include "camera.h"
 #include "e/input.h"
 
 #define TEXTINPUT_MAX_CHARS 27
@@ -24,7 +23,6 @@ enum TextInput_state {
 
 typedef struct {
     eInput *input_ref;
-    const Camera_s *camera_ref;
 
     struct {
         char text[TEXTINPUT_MAX_CHARS+1];   // + '\0'
@@ -48,7 +46,7 @@ typedef struct {
 } TextInput;
 
 // if opt_max_chars <= 0, TEXTINPUT_MAX_CHARS is used instead
-TextInput *textinput_new(eInput *input, const Camera_s *cam, const char *title, int opt_max_chars);
+TextInput *textinput_new(eInput *input, const char *title, int opt_max_chars);
 
 void textinput_kill(TextInput **self_ptr);
 

@@ -10,6 +10,8 @@
 #include "button.h"
 #include "textinput.h"
 
+#include "hudcamera.h"
+
 #define KEY_COLS 10
 #define KEY_ROWS 4
 #define MAX_WIDTH 250
@@ -38,12 +40,12 @@ static const char layout_alt[4][10] = {
         "CCSSSSSSOO"
 };
 
-void set_key_pos(mat4 *pose, const Camera_s *cam, int col, int row, int cols, float y_offset) {
-    float width = camera_width(cam) - 16;
+void set_key_pos(mat4 *pose, int col, int row, int cols, float y_offset) {
+    float width = hudcamera_width() - 16;
     width = sca_min(width, MAX_WIDTH);
 
     float x = 8 - width / 2 + width * col / KEY_COLS + (cols - 1) * 8;
-    float y = cam->RO.bottom + 12 + 18 * (KEY_ROWS - row - 1) + y_offset + (row != 3) * 4;
+    float y = hudcamera_bottom() + 12 + 18 * (KEY_ROWS - row - 1) + y_offset + (row != 3) * 4;
     u_pose_set_xy(pose, (int) x, (int) y);
 }
 
@@ -93,7 +95,7 @@ static void handle_ok(TextInput *self) {
 
 static void pointer_event(ePointer_s pointer, void *user_data) {
     TextInput *self = user_data;
-    pointer.pos = mat4_mul_vec(self->camera_ref->matrices.p_inv, pointer.pos);
+    pointer.pos = mat4_mul_vec(hudcamera.matrices.p_inv, pointer.pos);
 
     if (button_clicked(&self->L.shift.rect, pointer)) {
         self->L.shiftstate++;
@@ -153,14 +155,13 @@ static void key_raw_event(const SDL_Event *event, void *user_data) {
 // public
 //
 
-TextInput *textinput_new(eInput *input, const Camera_s *cam, const char *title, int opt_max_chars) {
+TextInput *textinput_new(eInput *input, const char *title, int opt_max_chars) {
     TextInput *self = rhc_calloc(sizeof *self);
 
     e_input_set_vip_pointer_event(input, pointer_event, self);
     e_input_set_vip_key_raw_event(input, key_raw_event, self);
 
     self->input_ref = input;
-    self->camera_ref = cam;
 
     self->out.state = TEXTINPUT_IN_PROGRESS;
 
@@ -228,8 +229,6 @@ void textinput_kill(TextInput **self_ptr) {
 }
 
 void textinput_update(TextInput *self, float dtime) {
-    const Camera_s *cam = self->camera_ref;
-
     char text[TEXTINPUT_MAX_CHARS];
     strcpy(text, self->out.text);
 
@@ -250,8 +249,8 @@ void textinput_update(TextInput *self, float dtime) {
     u_pose_set_xy(&self->L.textfield.pose, -80, 4);
 
     self->L.text_bg.rect.pose = u_pose_new_aa(
-            cam->RO.left, 6,
-            camera_width(cam), 12);
+            hudcamera_left(), 6,
+            hudcamera_width(), 12);
 
     int idx = 0;
     for (int r = 0; r < 3; r++) {
@@ -264,8 +263,8 @@ void textinput_update(TextInput *self, float dtime) {
 
             bool pressed = button_is_pressed(&self->L.keys.rects[idx]);
 
-            set_key_pos(&self->L.keys.rects[idx].pose, cam, c, r, 1, 0);
-            set_key_pos(&self->L.chars.rects[idx].pose, cam, c, pressed ? 0 : r, 1, pressed ? 16 : 1);
+            set_key_pos(&self->L.keys.rects[idx].pose, c, r, 1, 0);
+            set_key_pos(&self->L.chars.rects[idx].pose, c, pressed ? 0 : r, 1, pressed ? 16 : 1);
             self->L.chars.rects[idx].color = pressed ? R_COLOR_WHITE : R_COLOR_BLACK;
 
             self->L.textfield.sprite_fn(&self->L.chars.rects[idx].sprite, key);
@@ -275,17 +274,17 @@ void textinput_update(TextInput *self, float dtime) {
     }
 
     self->L.shift.rect.sprite.y = self->L.shiftstate;
-    set_key_pos(&self->L.shift.rect.pose, cam, 0, 2, 1, 0);
-    set_key_pos(&self->L.space.rect.pose, cam, 2, 3, 6, 0);
+    set_key_pos(&self->L.shift.rect.pose, 0, 2, 1, 0);
+    set_key_pos(&self->L.space.rect.pose, 2, 3, 6, 0);
 
     // ok, cancel, backspace
-    set_key_pos(&self->L.special.rects[0].pose, cam, 8, 3, 2, 0);
-    set_key_pos(&self->L.special.rects[1].pose, cam, 0, 3, 2, 0);
-    set_key_pos(&self->L.special.rects[2].pose, cam, 8, 2, 2, 0);
+    set_key_pos(&self->L.special.rects[0].pose, 8, 3, 2, 0);
+    set_key_pos(&self->L.special.rects[1].pose, 0, 3, 2, 0);
+    set_key_pos(&self->L.special.rects[2].pose, 8, 2, 2, 0);
 
     self->L.bg.rect.pose = u_pose_new_aa(
-            cam->RO.left, cam->RO.top,
-            camera_width(cam), camera_height(cam));
+            hudcamera_left(), hudcamera_top(),
+            hudcamera_width(), hudcamera_height());
 
     ro_batch_update(&self->L.keys);
     ro_batch_update(&self->L.chars);
