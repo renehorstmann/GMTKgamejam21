@@ -7,7 +7,7 @@
 
 typedef struct {
     float time;
-    
+
     struct {
         RoParticle ro;
         int next;

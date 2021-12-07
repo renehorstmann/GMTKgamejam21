@@ -15,7 +15,7 @@ typedef struct {
     Sound *sound_ref;
     Fish *fish_ref;
     struct Game *game_ref;
-    
+
     struct {
         RoSingle ro;
         RoSingle btn;

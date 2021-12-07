@@ -16,7 +16,6 @@
 #define PARTICLE_ALPHA 1.5
 
 
-
 static void emit_particles(Feed *self, float x, float y, vec3 color) {
     rParticleRect_s rects[NUM_PARTICLES];
     for (int i = 0; i < NUM_PARTICLES; i++) {
@@ -44,29 +43,29 @@ static void emit_particles(Feed *self, float x, float y, vec3 color) {
 
 Feed *feed_new(Sound *sound, PixelParticles *particles) {
     Feed *self = rhc_calloc(sizeof *self);
-    
+
     self->sound_ref = sound;
     self->particles_ref = particles;
-    
+
     self->L.ro = ro_batch_new(FEED_MAX, r_texture_new_file(1, 4, "res/food.png"));
 
     for (int i = 0; i < FEED_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();
 
         self->L.ro.rects[i].uv = u_pose_new(0, 0,
-                                      rand() % 2 == 0 ? -1 : 1,
-                                      rand() % 2 == 0 ? -1 : 1);
+                                            rand() % 2 == 0 ? -1 : 1,
+                                            rand() % 2 == 0 ? -1 : 1);
         self->L.ro.rects[i].sprite.y = rand() % 4;
     }
 
     ro_batch_update(&self->L.ro);
-    
+
     return self;
 }
 
 void feed_kill(Feed **self_ptr) {
     Feed *self = *self_ptr;
-    if(!self)
+    if (!self)
         return;
     ro_batch_kill(&self->L.ro);
     rhc_free(self);
@@ -80,7 +79,7 @@ void feed_update(Feed *self, float dtime) {
         self->L.ro.rects[i].pose = u_pose_new(self->feed[i].pos.x, self->feed[i].pos.y, 16, 16);
         self->L.ro.rects[i].color = self->feed[i].color;
     }
-    for(int i=self->feed_size; i<FEED_MAX; i++) {
+    for (int i = self->feed_size; i < FEED_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();
     }
 
@@ -92,19 +91,19 @@ void feed_render(const Feed *self, const mat4 *cam_mat) {
 }
 
 void feed_eat(Feed *self, FeedItem_s *item, float time) {
-    if(item->size <= 0)
+    if (item->size <= 0)
         return;
 
     float prev_size = item->size;
     item->size -= EAT_SIZE_TIME * time;
-    if(item->size<=0) {
+    if (item->size <= 0) {
         self->eaten++;
         self->out.score++;
-        for(int i=0; i<5; i++)
+        for (int i = 0; i < 5; i++)
             emit_particles(self, item->pos.x, item->pos.y, item->color.rgb);
     }
 
-    if(sca_mod(prev_size, 0.5) < sca_mod(item->size, 0.5)) {
+    if (sca_mod(prev_size, 0.5) < sca_mod(item->size, 0.5)) {
         emit_particles(self, item->pos.x, item->pos.y, item->color.rgb);
         sound_play_feed(self->sound_ref);
     }

@@ -16,7 +16,7 @@ typedef struct {
 typedef struct {
     Sound *sound_ref;
     PixelParticles *particles_ref;
-    
+
     FeedItem_s feed[FEED_MAX];
     int feed_size;
     int eaten;

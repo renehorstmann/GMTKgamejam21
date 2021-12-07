@@ -26,13 +26,13 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
 
 Dead *dead_new(eInput *input, const Camera_s *cam, Sound *sound, Fish *fish, Game *game) {
     Dead *self = rhc_calloc(sizeof *self);
-    
+
     self->input_ref = input;
     self->cam_ref = cam;
     self->sound_ref = sound;
     self->fish_ref = fish;
     self->game_ref = game;
-    
+
     e_input_register_pointer_event(input, pointer_callback, self);
 
     self->L.ro = ro_single_new(r_texture_new_white_pixel());
@@ -46,13 +46,13 @@ Dead *dead_new(eInput *input, const Camera_s *cam, Sound *sound, Fish *fish, Gam
 
     self->L.credits = ro_text_new_font55(32);
     ro_text_set_text(&self->L.credits, "\"swarm\" by horsimann");
-    
+
     return self;
 }
 
 void dead_kill(Dead **self_ptr) {
     Dead *self = *self_ptr;
-    if(!self)
+    if (!self)
         return;
     e_input_unregister_pointer_event(self->input_ref, pointer_callback);
     ro_single_kill(&self->L.ro);
@@ -64,7 +64,7 @@ void dead_kill(Dead **self_ptr) {
 }
 
 void dead_update(Dead *self, float dtime) {
-    if (self->fish_ref->game_running &&self->fish_ref->swarmed_size >= 3) {
+    if (self->fish_ref->game_running && self->fish_ref->swarmed_size >= 3) {
         self->L.show = false;
         return;
     }
@@ -88,14 +88,14 @@ void dead_update(Dead *self, float dtime) {
 
     vec2 size = ro_text_set_text(&self->L.info, buf);
     self->L.info.pose = u_pose_new(sca_floor(-size.x / 2 * TEXT_SIZE),
-                             sca_floor(+size.y / 2 * TEXT_SIZE),
-                             TEXT_SIZE, TEXT_SIZE);
+                                   sca_floor(+size.y / 2 * TEXT_SIZE),
+                                   TEXT_SIZE, TEXT_SIZE);
 
     self->L.ro.rect.color.a = sca_mix(0.75, 0.1, self->L.time / RESCUE_TIME);
 
     self->L.btn.rect.pose = u_pose_new(0, -64, 64, 64);
 
-    self->L.credits.pose = u_pose_new(sca_floor(1-CAMERA_SIZE/2), sca_floor(self->cam_ref->RO.top-1), 1, 1);
+    self->L.credits.pose = u_pose_new(sca_floor(1 - CAMERA_SIZE / 2), sca_floor(self->cam_ref->RO.top - 1), 1, 1);
 }
 
 void dead_render(const Dead *self, const mat4 *cam_mat) {

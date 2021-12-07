@@ -10,35 +10,35 @@
 
 Bubbles *bubbles_new(const Camera_s *cam) {
     Bubbles *self = rhc_calloc(sizeof *self);
-    
+
     uImage img = u_image_new_file(2, "res/bubble.png");
     assume(u_image_valid(img), "bubble not found?");
 
     self->L.ro = ro_particlerefract_new(BUBBLES_SIZE,
-                                  r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 0)),
-                                  r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 1))
-                                  );
+                                        r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 0)),
+                                        r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, 1))
+    );
 
     float radius = camera_height(cam) > camera_width(cam) ? camera_height(cam) : camera_width(cam);
-    for(int i=0; i<self->L.ro.num; i++) {
+    for (int i = 0; i < self->L.ro.num; i++) {
         self->L.ro.rects[i].speed.y = 10;
         self->L.ro.rects[i].pose = u_pose_new(
                 sca_random_noise(0, radius),
                 -radius,
                 img.cols, img.rows
-                );
+        );
         self->L.ro.rects[i].start_time = sca_random_range(-MAX_TIME, 0);
     }
     ro_particlerefract_update(&self->L.ro);
 
     u_image_kill(&img);
-    
+
     return self;
 }
 
 void bubbles_kill(Bubbles **self_ptr) {
     Bubbles *self = *self_ptr;
-    if(!self)
+    if (!self)
         return;
     ro_particlerefract_kill(&self->L.ro);
     rhc_free(self);
@@ -47,8 +47,8 @@ void bubbles_kill(Bubbles **self_ptr) {
 
 void bubbles_update(Bubbles *self, float dtime) {
     self->L.time += dtime;
-    for(int i=0; i<self->L.ro.num; i++) {
-        if(self->L.ro.rects[i].start_time<self->L.time-MAX_TIME)
+    for (int i = 0; i < self->L.ro.num; i++) {
+        if (self->L.ro.rects[i].start_time < self->L.time - MAX_TIME)
             self->L.ro.rects[i].start_time = self->L.time;
     }
     ro_particlerefract_update(&self->L.ro);

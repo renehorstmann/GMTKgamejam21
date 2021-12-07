@@ -15,10 +15,10 @@
 //
 
 Background *background_new(rRender *render, float level_width, float level_height,
-        bool repeat_h, bool repeat_v, 
-        const char *file) {
-    Background *self = rhc_calloc(sizeof *self);        
-            
+                           bool repeat_h, bool repeat_v,
+                           const char *file) {
+    Background *self = rhc_calloc(sizeof *self);
+
     uImage img = u_image_new_file(CAMERA_BACKGROUNDS, file);
 
     // top left pixel will be clear color
@@ -28,39 +28,39 @@ Background *background_new(rRender *render, float level_width, float level_heigh
     float rows = img.rows * PIXEL_SIZE;
     float cols = img.cols * PIXEL_SIZE;
 
-    int size_h = repeat_h? ceilf(level_width / cols) : 1;
-    int size_v = repeat_v? ceilf(level_height / rows) : 1;
+    int size_h = repeat_h ? ceilf(level_width / cols) : 1;
+    int size_v = repeat_v ? ceilf(level_height / rows) : 1;
 
     for (int i = 0; i < CAMERA_BACKGROUNDS; i++) {
         rTexture tex = r_texture_new(img.cols, img.rows, 1, 1, u_image_layer(img, i));
-        self->L.ro[i] = ro_batch_new(size_h*size_v, tex);
+        self->L.ro[i] = ro_batch_new(size_h * size_v, tex);
 
         for (int v = 0; v < size_v; v++) {
-            for(int h = 0; h < size_h; h++) {
-                self->L.ro[i].rects[v*size_h+h].pose = 
+            for (int h = 0; h < size_h; h++) {
+                self->L.ro[i].rects[v * size_h + h].pose =
                         u_pose_new_aa(
-                        cols * h, rows *(v+1), 
-                        cols, rows);
+                                cols * h, rows * (v + 1),
+                                cols, rows);
             }
         }
         ro_batch_update(&self->L.ro[i]);
     }
 
     u_image_kill(&img);
-    
+
     return self;
 }
 
 
 void background_kill(Background **self_ptr) {
     Background *self = *self_ptr;
-    if(!self)
+    if (!self)
         return;
     for (int i = 0; i < CAMERA_BACKGROUNDS; i++) {
         ro_batch_kill(&self->L.ro[i]);
     }
     rhc_free(self);
-    *self_ptr =NULL;
+    *self_ptr = NULL;
 }
 
 

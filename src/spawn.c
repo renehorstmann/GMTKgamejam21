@@ -26,7 +26,7 @@
 #define SHARK_START_SPEED_START 30.0
 #define SHARK_START_SPEED_END 60.0
 #define SHARK_MAX_SPEED 120.0
- 
+
 
 static vec3 hsv_fish() {
     return (vec3) {{
@@ -64,20 +64,20 @@ static vec2 random_euler_pos(float min, float max) {
 static vec4 random_spawn_pos_dir(const Camera_s *cam, vec2 center, float offset) {
     vec2 pos;
 
-    if(rand()%2==0) {
+    if (rand() % 2 == 0) {
         // left or right
-        pos.x = rand()%2==0? cam->RO.left-offset : cam->RO.right+offset;
+        pos.x = rand() % 2 == 0 ? cam->RO.left - offset : cam->RO.right + offset;
         pos.y = sca_random_range(cam->RO.bottom, cam->RO.top);
     } else {
         // top or bottom
         pos.x = sca_random_range(cam->RO.left, cam->RO.right);
-        pos.y = rand()%2==0? cam->RO.bottom-offset : cam->RO.top+offset;
+        pos.y = rand() % 2 == 0 ? cam->RO.bottom - offset : cam->RO.top + offset;
     }
 
     vec2 dst = {{
-                        sca_random_range(cam->RO.left+offset, cam->RO.right-offset),
-                        sca_random_range(cam->RO.bottom+offset, cam->RO.top-offset),
-    }};
+                        sca_random_range(cam->RO.left + offset, cam->RO.right - offset),
+                        sca_random_range(cam->RO.bottom + offset, cam->RO.top - offset),
+                }};
 
     vec2 dir = vec2_normalize(vec2_sub_vec(dst, pos));
 
@@ -117,10 +117,10 @@ static Shark_s new_shark(vec2 pos) {
 static void respawn_fish(Spawn *self) {
     log_info("respawn_fish");
     mat4 border = u_pose_new(
-            self->camctrl_ref->pos.x, 
+            self->camctrl_ref->pos.x,
             self->camctrl_ref->pos.y,
-             camera_width(self->cam_ref) + 32,
-             camera_height(self->cam_ref) + 32);
+            camera_width(self->cam_ref) + 32,
+            camera_height(self->cam_ref) + 32);
     static int last = 0;
     for (int i = 0; i < self->fish_ref->alone_size; i++) {
         int idx = (i + last) % self->fish_ref->alone_size;
@@ -154,10 +154,10 @@ static void renew_feed(Spawn *self, FeedItem_s *feed) {
 static void respawn_feed(Spawn *self) {
     log_info("respawn_feed");
     mat4 border = u_pose_new(
-    self->camctrl_ref->pos.x, 
-    self->camctrl_ref->pos.y, 
-    camera_width(self->cam_ref) + 16, 
-    camera_height(self->cam_ref) + 16);
+            self->camctrl_ref->pos.x,
+            self->camctrl_ref->pos.y,
+            camera_width(self->cam_ref) + 16,
+            camera_height(self->cam_ref) + 16);
     static int last;
     for (int i = 0; i < self->feed_ref->feed_size; i++) {
         int idx = (i + last) % self->feed_ref->feed_size;
@@ -184,10 +184,10 @@ static void renew_shark(Spawn *self, Shark_s *shark) {
 static void respawn_shark(Spawn *self) {
     log_info("respawn_shark");
     mat4 border = u_pose_new(
-    self->camctrl_ref->pos.x, 
-    self->camctrl_ref->pos.y, 
-    camera_width(self->cam_ref) + 64, 
-    camera_height(self->cam_ref) + 32);
+            self->camctrl_ref->pos.x,
+            self->camctrl_ref->pos.y,
+            camera_width(self->cam_ref) + 64,
+            camera_height(self->cam_ref) + 32);
     static int last;
     for (int i = 0; i < self->shark_ref->shark_size; i++) {
         int idx = (i + last) % self->shark_ref->shark_size;
@@ -206,19 +206,19 @@ static void respawn_shark(Spawn *self) {
 
 Spawn *spawn_new(const Camera_s *cam, CameraCtrl_s *camctrl, Fish *fish, Feed *feed, Shark *shark) {
     Spawn *self = rhc_calloc(sizeof *self);
-    
+
     self->cam_ref = cam;
     self->camctrl_ref = camctrl;
     self->fish_ref = fish;
     self->feed_ref = feed;
     self->shark_ref = shark;
-    
+
     srand(time(NULL));
 
     self->fish_ref->swarmed_size = START_FISHS;
     self->fish_ref->alone_size = FISH_MAX - START_FISHS;
 
-    for(int i=0; i<START_FISHS; i++) {
+    for (int i = 0; i < START_FISHS; i++) {
         self->fish_ref->swarmed[i] = new_fish(random_euler_pos(16, 32));
     }
     for (int i = 0; i < START_NEAR_FISHS; i++) {
@@ -235,13 +235,13 @@ Spawn *spawn_new(const Camera_s *cam, CameraCtrl_s *camctrl, Fish *fish, Feed *f
     }
     self->feed_ref->feed_size = FEED_MAX;
 
-    for(int i=0; i<SHARK_MAX; i++) {
+    for (int i = 0; i < SHARK_MAX; i++) {
         self->shark_ref->shark[i] = new_shark(vec2_set(-FLT_MAX)); // to not eat fishis set are set to FLT_MAX
     }
     self->shark_ref->shark_size = SHARK_MAX;
     self->L.shark_time = RESPAWN_SHARK_TIME_START * 0.75;
     self->L.game_time = 0;
-    
+
     return self;
 }
 
@@ -253,7 +253,7 @@ void spawn_kill(Spawn **self_ptr) {
 
 void spawn_update(Spawn *self, float dtime) {
     self->L.game_time += dtime;
-    
+
     self->L.fish_time += dtime;
     if (self->L.fish_time > RESPAWN_FISH_TIME) {
         self->L.fish_time -= RESPAWN_FISH_TIME;

@@ -24,10 +24,10 @@ typedef struct {
     Sound *sound_ref;
     PixelParticles *particles_ref;
     Fish *fish_ref;
-    
+
     Shark_s shark[SHARK_MAX];
     int shark_size;
-    
+
     struct {
         RoBatch ro;
     } L;

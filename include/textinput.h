@@ -27,7 +27,7 @@ typedef struct {
     const Camera_s *camera_ref;
 
     struct {
-        char text[TEXTINPUT_MAX_CHARS+1];   // + '\0'
+        char text[TEXTINPUT_MAX_CHARS + 1];   // + '\0'
         enum TextInput_state state;
     } out;
 
@@ -39,7 +39,7 @@ typedef struct {
         RoSingle shift, space;
         RoBatch special;
         RoSingle text_bg, bg;
-        
+
         enum TextInput_shiftstate shiftstate;
 
         int max_chars;

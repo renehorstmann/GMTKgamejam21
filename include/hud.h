@@ -9,7 +9,7 @@ typedef struct {
     const Camera_s *cam_ref;
     const Fish *fish_ref;
     const Feed *feed_ref;
-    
+
     struct {
         RoSingle fish_icon;
         RoText fish_cnt;

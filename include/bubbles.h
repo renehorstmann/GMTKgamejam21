@@ -10,7 +10,7 @@ typedef struct {
     struct {
         RoParticleRefract ro;
         float time;
-    } L; 
+    } L;
 } Bubbles;
 
 Bubbles *bubbles_new(const Camera_s *cam);

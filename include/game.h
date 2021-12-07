@@ -17,9 +17,9 @@ typedef struct Game {
     Camera_s *cam_ref;
     Sound *sound_ref;
     PixelParticles *particles_ref;
-    
+
     CameraCtrl_s camctrl;
-    
+
     Fish *fish;
     Feed *feed;
     Shark *shark;

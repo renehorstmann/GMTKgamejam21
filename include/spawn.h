@@ -11,11 +11,11 @@
 typedef struct {
     const Camera_s *cam_ref;
     CameraCtrl_s *camctrl_ref;
-    
+
     Fish *fish_ref;
     Feed *feed_ref;
     Shark *shark_ref;
-    
+
     struct {
         float fish_time;
         float feed_time;

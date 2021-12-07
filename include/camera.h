@@ -27,8 +27,8 @@ typedef struct {
 
     struct CameraMatrices_s matrices_background[CAMERA_BACKGROUNDS];
     struct CameraMatrices_s matrices_main;
-    
-    
+
+
     struct {
         float real_pixel_per_pixel;
         float left, right, bottom, top;

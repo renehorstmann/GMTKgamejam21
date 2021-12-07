@@ -36,7 +36,7 @@ typedef struct {
     Sound *sound_ref;
     PixelParticles *particles_ref;
     Feed *feed_ref;
-    
+
     Fish_s swarmed[FISH_MAX];
     Fish_s alone[FISH_MAX];
 
@@ -46,7 +46,7 @@ typedef struct {
 
     int last_catched_idx;
     bool game_running;
-    
+
     struct {
         RoBatch ro;
 

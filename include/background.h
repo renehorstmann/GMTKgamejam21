@@ -13,8 +13,8 @@ typedef struct {
 
 
 Background *background_new(rRender *render, float level_width, float level_height,
-        bool repeat_h, bool repeat_v, 
-        const char *file);
+                           bool repeat_h, bool repeat_v,
+                           const char *file);
 
 void background_kill(Background **self_ptr);
 
