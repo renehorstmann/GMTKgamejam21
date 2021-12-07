@@ -4,10 +4,7 @@
 #include "mathc/float.h"
 #include "mathc/utils/random.h"
 #include "mathc/utils/color.h"
-#include "camera.h"
-#include "pixelparticles.h"
-#include "hud.h"
-#include "sound.h"
+#include "rhc/alloc.h"
 #include "feed.h"
 
 #define EAT_SIZE_TIME 1.0
@@ -18,14 +15,9 @@
 #define PARTICLE_TIME 1.0
 #define PARTICLE_ALPHA 1.5
 
-struct FeedGlobals_s feed;
 
-static struct {
-    RoBatch ro;
 
-} L;
-
-static void emit_particles(float x, float y, vec3 color) {
+static void emit_particles(Feed *self, float x, float y, vec3 color) {
     rParticleRect_s rects[NUM_PARTICLES];
     for (int i = 0; i < NUM_PARTICLES; i++) {
         rects[i] = r_particlerect_new();
@@ -40,65 +32,80 @@ static void emit_particles(float x, float y, vec3 color) {
                 (vec3) {{0.2, 0.2, 0.2}});
         rects[i].color.a = PARTICLE_ALPHA;
         rects[i].color_speed.a = (float) -PARTICLE_ALPHA / PARTICLE_TIME;
-        rects[i].start_time = pixelparticles.time;
+        rects[i].start_time = self->particles_ref->time;
     }
-    pixelparticles_add(rects, NUM_PARTICLES);
+    pixelparticles_add(self->particles_ref, rects, NUM_PARTICLES);
 }
 
-void feed_init() {
-    L.ro = ro_batch_new(FEED_MAX, r_texture_new_file(1, 4, "res/food.png"));
+
+//
+// public
+//
+
+Feed *feed_new(Sound *sound, PixelParticles *particles) {
+    Feed *self = rhc_calloc(sizeof *self);
+    
+    self->sound_ref = sound;
+    self->particles_ref = particles;
+    
+    self->L.ro = ro_batch_new(FEED_MAX, r_texture_new_file(1, 4, "res/food.png"));
 
     for (int i = 0; i < FEED_MAX; i++) {
-        L.ro.rects[i].pose = u_pose_new_hidden();
+        self->L.ro.rects[i].pose = u_pose_new_hidden();
 
-        L.ro.rects[i].uv = u_pose_new(0, 0,
+        self->L.ro.rects[i].uv = u_pose_new(0, 0,
                                       rand() % 2 == 0 ? -1 : 1,
                                       rand() % 2 == 0 ? -1 : 1);
-        L.ro.rects[i].sprite.y = rand() % 4;
+        self->L.ro.rects[i].sprite.y = rand() % 4;
     }
 
-    ro_batch_update(&L.ro);
+    ro_batch_update(&self->L.ro);
+    
+    return self;
 }
 
-void feed_kill() {
-    ro_batch_kill(&L.ro);
-    memset(&L, 0, sizeof(L));
-    memset(&feed, 0, sizeof(feed));
+void feed_kill(Feed **self_ptr) {
+    Feed *self = *self_ptr;
+    if(!self)
+        return;
+    ro_batch_kill(&self->L.ro);
+    rhc_free(self);
+    *self_ptr = NULL;
 }
 
-void feed_update(float dtime) {
-    for (int i = 0; i < feed.feed_size; i++) {
-        vec2 delta = vec2_scale(feed.feed[i].speed, dtime);
-        feed.feed[i].pos = vec2_add_vec(feed.feed[i].pos, delta);
-        L.ro.rects[i].pose = u_pose_new(feed.feed[i].pos.x, feed.feed[i].pos.y, 16, 16);
-        L.ro.rects[i].color = feed.feed[i].color;
+void feed_update(Feed *self, float dtime) {
+    for (int i = 0; i < self->feed_size; i++) {
+        vec2 delta = vec2_scale(self->feed[i].speed, dtime);
+        self->feed[i].pos = vec2_add_vec(self->feed[i].pos, delta);
+        self->L.ro.rects[i].pose = u_pose_new(self->feed[i].pos.x, self->feed[i].pos.y, 16, 16);
+        self->L.ro.rects[i].color = self->feed[i].color;
     }
-    for(int i=feed.feed_size; i<FEED_MAX; i++) {
-        L.ro.rects[i].pose = u_pose_new_hidden();
+    for(int i=self->feed_size; i<FEED_MAX; i++) {
+        self->L.ro.rects[i].pose = u_pose_new_hidden();
     }
 
-    ro_batch_update(&L.ro);
+    ro_batch_update(&self->L.ro);
 }
 
-void feed_render() {
-    ro_batch_render(&L.ro, (const mat4*) camera.gl_main);
+void feed_render(const Feed *self, const mat4 *cam_mat) {
+    ro_batch_render(&self->L.ro, cam_mat);
 }
 
-void feed_eat(Feed_s *self, float time) {
-    if(self->size <= 0)
+void feed_eat(Feed *self, FeedItem_s *item, float time) {
+    if(item->size <= 0)
         return;
 
-    float prev_size = self->size;
-    self->size -= EAT_SIZE_TIME * time;
-    if(self->size<=0) {
-        feed.eaten++;
-        hud_score();
+    float prev_size = item->size;
+    item->size -= EAT_SIZE_TIME * time;
+    if(item->size<=0) {
+        self->eaten++;
+        self->out.score++;
         for(int i=0; i<5; i++)
-            emit_particles(self->pos.x, self->pos.y, self->color.rgb);
+            emit_particles(self, item->pos.x, item->pos.y, item->color.rgb);
     }
 
-    if(sca_mod(prev_size, 0.5) < sca_mod(self->size, 0.5)) {
-        emit_particles(self->pos.x, self->pos.y, self->color.rgb);
-        sound_play_feed();
+    if(sca_mod(prev_size, 0.5) < sca_mod(item->size, 0.5)) {
+        emit_particles(self, item->pos.x, item->pos.y, item->color.rgb);
+        sound_play_feed(self->sound_ref);
     }
 }

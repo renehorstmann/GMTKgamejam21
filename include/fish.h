@@ -2,7 +2,10 @@
 #define GMTKJAM21_FISH_H
 
 #include "e/input.h"
-#include "mathc/types/float.h"
+#include "camera.h"
+#include "sound.h"
+#include "pixelparticles.h"
+#include "feed.h"
 
 #define FISH_MAX 24
 
@@ -12,6 +15,7 @@ enum FishState {
     FISH_NUM_STATES
 };
 
+// single fish
 typedef struct {
     vec2 pos;
     vec2 speed;
@@ -25,7 +29,14 @@ typedef struct {
     } L;
 } Fish_s;
 
-struct FishGlobals_s {
+// module
+typedef struct {
+    eInput *input_ref;
+    const Camera_s *camera_ref;
+    Sound *sound_ref;
+    PixelParticles *particles_ref;
+    Feed *feed_ref;
+    
     Fish_s swarmed[FISH_MAX];
     Fish_s alone[FISH_MAX];
 
@@ -35,22 +46,33 @@ struct FishGlobals_s {
 
     int last_catched_idx;
     bool game_running;
-} ;
-extern struct FishGlobals_s fish;
+    
+    struct {
+        RoBatch ro;
 
-void fish_init(eInput *input);
+        vec2 swarm_center;
 
-void fish_kill();
+        struct {
+            RoSingle ring_ro;
+            int active;
+            vec2 dst;
+        } move;
+    } L;
+} Fish;
 
-void fish_update(float dtime);
+Fish *fish_new(eInput *input, const Camera_s *cam, Sound *sound, PixelParticles *particles, Feed *feed);
 
-void fish_render();
+void fish_kill(Fish **self_ptr);
 
-vec2 fish_swarm_center();
+void fish_update(Fish *self, float dtime);
 
-void fish_catch_alone(int idx);
+void fish_render(const Fish *self, const mat4 *cam_mat);
 
-void fish_eat(int idx, bool swarmed);
+vec2 fish_swarm_center(const Fish *self);
+
+void fish_catch_alone(Fish *self, int idx);
+
+void fish_eat(Fish *self, int idx, bool swarmed);
 
 
 #endif //GMTKJAM21_FISH_H

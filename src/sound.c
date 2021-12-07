@@ -1,40 +1,48 @@
 #include <SDL2/SDL_mixer.h>
 #include "rhc/log.h"
+#include "rhc/alloc.h"
+#include "mathc/sca/float.h"
 #include "sound.h"
 
-static struct {
+#define FEED_PER_SECOND 4
+
+struct Sound {
+    eInput *input_ref;
+    
     Mix_Chunk *activate;
     Mix_Chunk *feed;
     Mix_Chunk *shark;
     Mix_Chunk *gameover;
-} L;
+    
+    float feed_per_second;
+};
 
-void sound_init() {
+static void init(Sound *self) {
     if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
         log_warn("sound not working");
-        return;
+        return;;
     }
 
-    L.activate = Mix_LoadWAV("res/sound_activate.wav");
-    if (!L.activate) {
+    self->activate = Mix_LoadWAV("res/sound_activate.wav");
+    if (!self->activate) {
         log_warn("failed to load activate");
         return;
     }
 
-    L.feed = Mix_LoadWAV("res/sound_feed.wav");
-    if (!L.feed) {
+    self->feed = Mix_LoadWAV("res/sound_feed.wav");
+    if (!self->feed) {
         log_warn("failed to load feed");
         return;
     }
 
-    L.shark = Mix_LoadWAV("res/sound_shark.wav");
-    if (!L.shark) {
+    self->shark = Mix_LoadWAV("res/sound_shark.wav");
+    if (!self->shark) {
         log_warn("failed to load shark");
         return;
     }
 
-    L.gameover = Mix_LoadWAV("res/sound_gameover.wav");
-    if (!L.gameover) {
+    self->gameover = Mix_LoadWAV("res/sound_gameover.wav");
+    if (!self->gameover) {
         log_warn("failed to load gameover");
         return;
     }
@@ -51,29 +59,60 @@ void sound_init() {
     }
 }
 
-void sound_play_activate() {
-    if (Mix_PlayChannel(-1, L.activate, 0) == -1) {
+static void pointer_event(ePointer_s pointer, void *user_data) {
+    Sound *self = user_data;
+    
+    // wait for first finished user pointer action
+    if(pointer.action != E_POINTER_UP) 
+        return;
+    
+    // init SDL_Mixer
+    // on web, sound will be muted, if created before an user action....
+    init(self);
+    
+    e_input_unregister_pointer_event(self->input_ref, pointer_event);
+}
+
+
+Sound *sound_new(eInput *input) {
+    Sound *self = rhc_calloc(sizeof *self);
+    self->input_ref = input;
+    
+    e_input_register_pointer_event(input, pointer_event, self);
+    
+    return self;
+}
+
+void sound_update(Sound *self, float dtime) {
+    self->feed_per_second = sca_max(0, self->feed_per_second-dtime*FEED_PER_SECOND);
+}
+
+void sound_play_activate(Sound *self) {
+    if (Mix_PlayChannel(-1, self->activate, 0) == -1) {
         log_warn("failed to play");
         return;
     }
 }
 
-void sound_play_feed() {
-    if (Mix_PlayChannel(-1, L.feed, 0) == -1) {
+void sound_play_feed(Sound *self) {
+    if(self->feed_per_second > FEED_PER_SECOND)
+        return;
+    self->feed_per_second += 1;
+    if (Mix_PlayChannel(-1, self->feed, 0) == -1) {
         log_warn("failed to play");
         return;
     }
 }
 
-void sound_play_shark() {
-    if (Mix_PlayChannel(-1, L.shark, 0) == -1) {
+void sound_play_shark(Sound *self) {
+    if (Mix_PlayChannel(-1, self->shark, 0) == -1) {
         log_warn("failed to play");
         return;
     }
 }
 
-void sound_play_gameover() {
-    if (Mix_PlayChannel(-1, L.gameover, 0) == -1) {
+void sound_play_gameover(Sound *self) {
+    if (Mix_PlayChannel(-1, self->gameover, 0) == -1) {
         log_warn("failed to play");
         return;
     }

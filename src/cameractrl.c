@@ -1,27 +1,20 @@
 #include "mathc/float.h"
-#include "camera.h"
 #include "cameractrl.h"
-
-
-struct CameraControlGlobals_s cameractrl;
 
 
 //
 // public
 //
 
-void cameractrl_init() {
-    
+CameraCtrl_s cameractrl_new() {
+    return (CameraCtrl_s) {0};
 }
 
-void cameractrl_kill() {
 
-}
-
-void cameractrl_update(float dtime) {
+void cameractrl_update(CameraCtrl_s *self, Camera_s *cam, float dtime) {
     
-    cameractrl.pos = vec2_mix(cameractrl.pos, cameractrl.in.dst, 1.0*dtime);
+    self->pos = vec2_mix(self->pos, self->in.dst, 1.0*dtime);
 
-    camera_set_pos(cameractrl.pos.x, cameractrl.pos.y);
+    camera_set_pos(cam, self->pos.x, self->pos.y);
 }
 

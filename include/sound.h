@@ -1,14 +1,20 @@
 #ifndef GMTKJAM21_SOUND_H
 #define GMTKJAM21_SOUND_H
 
-void sound_init();
+#include "e/input.h"
 
-void sound_play_activate();
+typedef struct Sound Sound;
 
-void sound_play_feed();
+Sound *sound_new(eInput *input);
 
-void sound_play_shark();
+void sound_update(Sound *self, float dtime);
 
-void sound_play_gameover();
+void sound_play_activate(Sound *self);
+
+void sound_play_feed(Sound *self);
+
+void sound_play_shark(Sound *self);
+
+void sound_play_gameover(Sound *self);
 
 #endif //GMTKJAM21_SOUND_H

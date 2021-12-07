@@ -3,12 +3,22 @@
 
 #define BUBBLES_SIZE 32
 
-void bubbles_init();
+#include "r/ro_particlerefract.h"
+#include "camera.h"
 
-void bubbles_kill();
+typedef struct {
+    struct {
+        RoParticleRefract ro;
+        float time;
+    } L; 
+} Bubbles;
 
-void bubbles_update(float dtime);
+Bubbles *bubbles_new(const Camera_s *cam);
 
-void bubbles_render();
+void bubbles_kill(Bubbles **self_ptr);
+
+void bubbles_update(Bubbles *self, float dtime);
+
+void bubbles_render(const Bubbles *self, const mat4 *cam_mat, float cam_scale);
 
 #endif //GMTKJAM21_BUBBLES_H

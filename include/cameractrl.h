@@ -1,21 +1,18 @@
 #ifndef GMTKJAM21_CAMERACTRL_H
 #define GMTKJAM21_CAMERACTRL_H
 
-#include "mathc/types/float.h"
+#include "camera.h"
 
-struct CameraControlGlobals_s {
+typedef struct {
     vec2 pos;
 
     struct {
         vec2 dst;
     } in;
-};
-extern struct CameraControlGlobals_s cameractrl;
+} CameraCtrl_s;
 
-void cameractrl_init();
+CameraCtrl_s cameractrl_new();
 
-void cameractrl_kill();
-
-void cameractrl_update(float dtime);
+void cameractrl_update(CameraCtrl_s *self, Camera_s *cam, float dtime);
 
 #endif //GMTKJAM21_CAMERACTRL_H

@@ -1,7 +1,8 @@
 #ifndef GMTKJAM21_FEED_H
 #define GMTKJAM21_FEED_H
 
-#include "mathc/types/float.h"
+#include "sound.h"
+#include "pixelparticles.h"
 
 #define FEED_MAX 24
 
@@ -10,23 +11,31 @@ typedef struct {
     vec2 speed;
     vec4 color;
     float size;
-} Feed_s;
+} FeedItem_s;
 
-struct FeedGlobals_s {
-    Feed_s feed[FEED_MAX];
+typedef struct {
+    Sound *sound_ref;
+    PixelParticles *particles_ref;
+    
+    FeedItem_s feed[FEED_MAX];
     int feed_size;
     int eaten;
-};
-extern struct FeedGlobals_s feed;
+    struct {
+        int score;
+    } out;
+    struct {
+        RoBatch ro;
+    } L;
+} Feed;
 
-void feed_init();
+Feed *feed_new(Sound *sound, PixelParticles *particles);
 
-void feed_kill();
+void feed_kill(Feed **self_ptr);
 
-void feed_update(float dtime);
+void feed_update(Feed *self, float dtime);
 
-void feed_render();
+void feed_render(const Feed *self, const mat4 *cam_mat);
 
-void feed_eat(Feed_s *self, float time);
+void feed_eat(Feed *self, FeedItem_s *item, float time);
 
 #endif //GMTKJAM21_FEED_H
