@@ -67,14 +67,15 @@ Login *login_new(eInput *input, const Camera_s *cam) {
     }
     string_kill(&name);
 
-
     // poses
     self->L.title.pose = u_pose_new(-80, 80, 4, 4);
     self->L.yourname.pose = u_pose_new(-60, 40, 2, 2);
     self->L.name.pose = u_pose_new(-60, 10, 1, 1);
-    self->L.name_click_box = u_pose_new_aa(-60, 10,
+
+    // box around yourname and name text fields
+    self->L.name_click_box = u_pose_new_aa(-60, 40,
                                            LOGIN_NAME_MAX_LENGTH * self->L.name.offset.x,
-                                           self->L.name.offset.y);
+                                           30 + self->L.name.offset.y);
     self->L.play.rect.pose = u_pose_new(0, -44, 64, 64);
 
     return self;
