@@ -62,13 +62,19 @@ static void render(eSimple *simple, ivec2 window_size) {
     
     background_render(L.bg, &L.camera);
     pixelparticles_render(L.particles, cam_main_mat);
-    game_render(L.game, cam_main_mat, cam_hud_mat);
-    bubbles_render(L.bubbles, cam_main_mat, L.camera.RO.real_pixel_per_pixel);
-
-    //textinput_render(L.textinput, cam_hud_mat);
-
+    game_render_main(L.game, cam_main_mat);
+    
+    bubbles_render(L.bubbles, cam_hud_mat, L.camera.RO.real_pixel_per_pixel);
+    
+    
     // clone the current framebuffer into r_render_get_framebuffer_tex
     r_render_blit_framebuffer(simple->render, window_size);
+    
+
+    game_render_hud(L.game, cam_hud_mat);
+    
+    //textinput_render(L.textinput, cam_hud_mat);
+
 }
 
 int main(int argc, char **argv) {

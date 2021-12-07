@@ -56,15 +56,17 @@ void game_update(Game *self, float dtime) {
     }
 }
 
-void game_render(Game *self, const mat4 *cam_mat, const mat4 *hudcam_mat) {
-    
+void game_render_main(const Game *self, const mat4 *cam_mat) {
     feed_render(self->feed, cam_mat);
     fish_render(self->fish, cam_mat);
     shark_render(self->shark, cam_mat);
-    
+}
+
+void game_render_hud(const Game *self, const mat4 *hudcam_mat) {
     dead_render(self->dead, hudcam_mat);
     hud_render(self->hud, hudcam_mat);
 }
+
 
 void game_reset(Game *self) {
     game_end(self);

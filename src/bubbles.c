@@ -5,7 +5,7 @@
 #include "mathc/utils/random.h"
 #include "bubbles.h"
 
-#define MAX_TIME 48.0
+#define MAX_TIME 150.0
 
 
 Bubbles *bubbles_new(const Camera_s *cam) {

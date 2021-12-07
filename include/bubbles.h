@@ -1,7 +1,7 @@
 #ifndef GMTKJAM21_BUBBLES_H
 #define GMTKJAM21_BUBBLES_H
 
-#define BUBBLES_SIZE 32
+#define BUBBLES_SIZE 128
 
 #include "r/ro_particlerefract.h"
 #include "camera.h"
