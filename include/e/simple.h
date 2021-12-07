@@ -31,10 +31,10 @@ struct eSimple {
     eInput *input;
     eGui *gui;
     rRender *render;
-
+    
     e_simple_update_fn update_fn;
     e_simple_render_fn render_fn;
-
+    
     void *user_data;
 };
 
@@ -44,9 +44,9 @@ struct eSimple {
 // if updates_per_seconds <= 0, updates delta_time is the time between the last frame
 // if updates_per_seconds > 0, updates delta_time is fixed to it (usefull for games: collisionchecks, etc.)
 void e_simple_start(const char *title, const char *author, float startup_block_time, float updates_per_seconds,
-                    e_simple_init_fn init_fn,
-                    e_simple_update_fn update_fn,
-                    e_simple_render_fn render_fn);
+        e_simple_init_fn init_fn,
+        e_simple_update_fn update_fn,
+        e_simple_render_fn render_fn);
 
 
 
