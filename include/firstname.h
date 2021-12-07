@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <ctype.h>
 #include "rhc/error.h"
 
 #define FIRSTNAME_MAX_LENGTH 16

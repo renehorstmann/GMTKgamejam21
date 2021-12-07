@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "e/io.h"
 #include "r/ro_text.h"
 #include "r/ro_single.h"
@@ -36,6 +37,15 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
     }
 }
 
+static bool name_valid(const char *name) {
+    int cnt_non_space = 0;
+    while(*name) {
+        if(!isspace(*name++))
+            cnt_non_space++;
+    }
+    return cnt_non_space >= LOGIN_NAME_MIN_LENGTH;
+}
+
 Login *login_new(eInput *input, const Camera_s *cam) {
     Login *self = rhc_calloc(sizeof *self);
 
@@ -58,7 +68,7 @@ Login *login_new(eInput *input, const Camera_s *cam) {
 
     // init name
     String name = e_io_savestate_read("name.txt", true);
-    if (string_valid(name)) {
+    if (string_valid(name) && name_valid(name.data)) {
         // strncpy does not set null terminator, but out.name is initialized with zeros and has LOGIN_NAME_MAX_LENGTH+1
         strncpy(self->out.name, name.data, name.size < LOGIN_NAME_MAX_LENGTH ? name.size : LOGIN_NAME_MAX_LENGTH);
     } else {
@@ -96,7 +106,7 @@ void login_kill(Login **self_ptr) {
 
 void login_update(Login *self, float dtime) {
     if(self->L.textinput) {
-        self->L.textinput->in.ok_active = strlen(self->L.textinput->out.text) >= LOGIN_NAME_MIN_LENGTH;
+        self->L.textinput->in.ok_active = name_valid(self->L.textinput->out.text);
 
         textinput_update(self->L.textinput, dtime);
 
