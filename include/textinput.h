@@ -27,6 +27,12 @@ typedef struct {
     const Camera_s *camera_ref;
 
     struct {
+        // default = true
+        // reset for example by ok_active = strlen(out.text) > 4
+        bool ok_active;
+    } in;
+
+    struct {
         char text[TEXTINPUT_MAX_CHARS + 1];   // + '\0'
         enum TextInput_state state;
     } out;

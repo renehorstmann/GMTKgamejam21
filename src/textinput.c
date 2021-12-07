@@ -87,6 +87,8 @@ static void handle_cancel(TextInput *self) {
 }
 
 static void handle_ok(TextInput *self) {
+    if(!self->in.ok_active)
+        return;
     log_info("textinput finished: %s", self->out.text);
     self->out.state = TEXTINPUT_DONE;
 }
@@ -279,7 +281,11 @@ void textinput_update(TextInput *self, float dtime) {
     set_key_pos(&self->L.space.rect.pose, cam, 2, 3, 6, 0);
 
     // ok, cancel, backspace
-    set_key_pos(&self->L.special.rects[0].pose, cam, 8, 3, 2, 0);
+    if(self->in.ok_active) {
+        set_key_pos(&self->L.special.rects[0].pose, cam, 8, 3, 2, 0);
+    } else {
+        u_pose_set_xy(&self->L.special.rects[0].pose, FLT_MAX, FLT_MAX);
+    }
     set_key_pos(&self->L.special.rects[1].pose, cam, 0, 3, 2, 0);
     set_key_pos(&self->L.special.rects[2].pose, cam, 8, 2, 2, 0);
 

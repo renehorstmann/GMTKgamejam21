@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "textinput.h"
 
+#define LOGIN_NAME_MIN_LENGTH 3
 #define LOGIN_NAME_MAX_LENGTH 16
 
 typedef struct {

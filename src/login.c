@@ -96,6 +96,8 @@ void login_kill(Login **self_ptr) {
 
 void login_update(Login *self, float dtime) {
     if(self->L.textinput) {
+        self->L.textinput->in.ok_active = strlen(self->L.textinput->out.text) >= LOGIN_NAME_MIN_LENGTH;
+
         textinput_update(self->L.textinput, dtime);
 
         if(self->L.textinput->out.state == TEXTINPUT_CANCELED) {
