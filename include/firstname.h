@@ -194,7 +194,9 @@ static void firstname_generate(char *out_name) {
             "Lutscher",
             "Lusche ",
             "Alki ",
-            "Smoker "
+            "Smoker ",
+            "Dulli",
+            "Bubi"
     };
     size_t mid_len = sizeof mid / sizeof *mid;
 //    for (int i = 0; i < mid_len; i++)
