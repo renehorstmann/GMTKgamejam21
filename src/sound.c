@@ -16,10 +16,24 @@ struct Sound {
 
     float feed_per_second;
 
+    bool do_init;
     bool active;
 };
 
+static void pointer_event(ePointer_s pointer, void *user_data) {
+    Sound *self = user_data;
+
+    // wait for first user pointer action
+
+    // init SDL_Mixer
+    // on web, sound will be muted, if created before an user action....
+    self->do_init = true;
+}
+
+
 static void init(Sound *self) {
+    e_input_unregister_pointer_event(self->input_ref, pointer_event);
+    
     if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
         log_warn("sound not working");
         return;;
@@ -64,17 +78,6 @@ static void init(Sound *self) {
     self->active = true;
 }
 
-static void pointer_event(ePointer_s pointer, void *user_data) {
-    Sound *self = user_data;
-
-    // wait for first user pointer action
-
-    // init SDL_Mixer
-    // on web, sound will be muted, if created before an user action....
-    init(self);
-
-    e_input_unregister_pointer_event(self->input_ref, pointer_event);
-}
 
 
 Sound *sound_new(eInput *input) {
@@ -87,6 +90,10 @@ Sound *sound_new(eInput *input) {
 }
 
 void sound_update(Sound *self, float dtime) {
+    if(self->do_init && !self->active) {
+        self->do_init = false;
+        init(self);
+    }
     if (!self->active)
         return;
     self->feed_per_second = sca_max(0, self->feed_per_second - dtime * FEED_PER_SECOND);
