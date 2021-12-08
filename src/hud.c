@@ -79,7 +79,7 @@ static void update_feed(Hud *self, float dtime) {
 
 static void update_score(Hud *self, float dtime) {
     char buf[33];
-    sprintf(buf, "SCORE %-i", self->L.score);
+    sprintf(buf, "SCORE %-i", self->RO.score);
     vec2 size = ro_text_set_text(&self->L.score_cnt, buf);
     self->L.score_cnt.pose = u_pose_new(
             sca_floor(-size.x / 2),
@@ -157,5 +157,5 @@ void hud_render(const Hud *self, const mat4 *hud_cam_mat) {
 }
 
 void hud_score(Hud *self) {
-    self->L.score += 100 * self->fish_ref->swarmed_size;
+    self->RO.score += 100 * self->fish_ref->swarmed_size;
 }

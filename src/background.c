@@ -1,5 +1,3 @@
-#include "r/render.h"
-#include "r/ro_single.h"
 #include "r/ro_batch.h"
 #include "r/texture.h"
 #include "u/pose.h"

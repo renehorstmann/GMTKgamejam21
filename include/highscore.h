@@ -5,13 +5,13 @@
 #include <stdbool.h>
 #include "rhc/types.h"
 
-#define HIGHSCORE_NAME_MAX_LENGTH 16
+#define HIGHSCORE_NAME_MAX_LENGTH 16 // 16 chars, excl null terminator (so buf size = 17)
 #define HIGHSCORE_TOPIC_MAX_LENGTH 64
 #define HIGHSCORE_ADDRESS_MAX_LENGTH 128
 #define HIGHSCORE_MAX_ENTRY_LENGTH 128
 
 typedef struct {
-    char name[HIGHSCORE_NAME_MAX_LENGTH];   // null terminated
+    char name[HIGHSCORE_NAME_MAX_LENGTH+1];   // + null terminated
     int score;
 } HighscoreEntry_s;
 
@@ -23,13 +23,6 @@ typedef struct {
     int entries_size;
 } Highscore;
 
-
-//
-// function prototype!
-// this function implementation should not be made public available
-// return the checksum for the given entry
-//
-uint64_t highscore_entry_get_checksum(HighscoreEntry_s self);
 
 
 //

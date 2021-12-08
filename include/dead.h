@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "sound.h"
 #include "fish.h"
+#include "showscore.h"
 
 struct Game;
 
@@ -16,6 +17,8 @@ typedef struct {
     Fish *fish_ref;
     struct Game *game_ref;
 
+    ShowScore *showscore;
+    
     struct {
         RoSingle ro;
         RoSingle btn;

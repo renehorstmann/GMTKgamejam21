@@ -2,7 +2,7 @@
 #define GMTKJAM21_BACKGROUND_H
 
 #include "r/render.h"
-#include "r/ro_batch.h"
+#include "r/ro_types.h"
 #include "camera.h"
 
 typedef struct {

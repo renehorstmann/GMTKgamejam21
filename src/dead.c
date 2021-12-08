@@ -19,6 +19,9 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
         return;
     pointer.pos = mat4_mul_vec(self->cam_ref->matrices_p_inv, pointer.pos);
 
+    if(self->showscore)
+        showscore_pointer(self->showscore, pointer);
+
     if (button_clicked(&self->L.btn.rect, pointer)) {
         game_reset(self->game_ref);
     }
@@ -54,6 +57,7 @@ void dead_kill(Dead **self_ptr) {
     Dead *self = *self_ptr;
     if (!self)
         return;
+    showscore_kill(&self->showscore);
     e_input_unregister_pointer_event(self->input_ref, pointer_callback);
     ro_single_kill(&self->L.ro);
     ro_text_kill(&self->L.info);
@@ -64,6 +68,8 @@ void dead_kill(Dead **self_ptr) {
 }
 
 void dead_update(Dead *self, float dtime) {
+    
+    
     if (self->fish_ref->game_running && self->fish_ref->swarmed_size >= 3) {
         self->L.show = false;
         return;
@@ -84,25 +90,38 @@ void dead_update(Dead *self, float dtime) {
         self->L.time = 0;
         sprintf(buf, "GAME OVER");
         self->fish_ref->game_running = false;
+        
+        if(!self->showscore) {
+            log_info("dead: starting showscore");
+            self->showscore = showscore_new(self->game_ref->name_ref, self->game_ref->hud->RO.score);
+        }
     }
 
     vec2 size = ro_text_set_text(&self->L.info, buf);
     self->L.info.pose = u_pose_new(sca_floor(-size.x / 2 * TEXT_SIZE),
-                                   sca_floor(+size.y / 2 * TEXT_SIZE),
+                                   -40 + sca_floor(+size.y / 2 * TEXT_SIZE),
                                    TEXT_SIZE, TEXT_SIZE);
 
     self->L.ro.rect.color.a = sca_mix(0.75, 0.1, self->L.time / RESCUE_TIME);
 
-    self->L.btn.rect.pose = u_pose_new(0, -64, 64, 64);
+    self->L.btn.rect.pose = u_pose_new(0, -40-64, 64, 64);
 
     self->L.credits.pose = u_pose_new(sca_floor(1 - CAMERA_SIZE / 2), sca_floor(self->cam_ref->RO.top - 1), 1, 1);
+    
+    if(self->showscore) {
+        self->showscore->in.pos = (vec2) {{-90, 100}};
+        showscore_update(self->showscore, dtime);
+    }
 }
 
 void dead_render(const Dead *self, const mat4 *cam_mat) {
+    
     if (!self->L.show)
         return;
     ro_single_render(&self->L.ro, cam_mat);
     ro_text_render(&self->L.info, cam_mat);
+    if(self->showscore)
+        showscore_render(self->showscore, cam_mat);
     if (self->L.time <= 0)
         ro_single_render(&self->L.btn, cam_mat);
     ro_text_render(&self->L.credits, cam_mat);

@@ -11,6 +11,10 @@ typedef struct {
     const Feed *feed_ref;
 
     struct {
+        int score;
+    } RO;
+
+    struct {
         RoSingle fish_icon;
         RoText fish_cnt;
         RoText min_info;
@@ -21,7 +25,6 @@ typedef struct {
         RoText feed_cnt;
         int feed_collected;
 
-        int score;
         RoText score_cnt;
         vec3 score_hsv;
     } L;

@@ -60,7 +60,7 @@ static void update(eSimple *simple, ivec2 window_size, float dtime) {
             strcpy(L.name, L.login->out.name);
             login_kill(&L.login);
             log_info("login done, starting game as: <%s>", L.name);
-            L.game = game_new(simple->input, &L.camera, L.sound, L.particles);
+            L.game = game_new(simple->input, &L.camera, L.sound, L.particles, L.name);
         }
     }
 

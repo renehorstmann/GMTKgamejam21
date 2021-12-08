@@ -25,13 +25,15 @@ static void game_end(Game *self) {
     dead_kill(&self->dead);
 }
 
-Game *game_new(eInput *input, Camera_s *cam, Sound *sound, PixelParticles *particles) {
+Game *game_new(eInput *input, Camera_s *cam, Sound *sound, PixelParticles *particles, const char *name) {
     Game *self = rhc_calloc(sizeof *self);
 
     self->input_ref = input;
     self->cam_ref = cam;
     self->sound_ref = sound;
     self->particles_ref = particles;
+    
+    self->name_ref = name;
 
     game_start(self);
 

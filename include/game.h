@@ -17,6 +17,8 @@ typedef struct Game {
     Camera_s *cam_ref;
     Sound *sound_ref;
     PixelParticles *particles_ref;
+    
+    const char *name_ref;
 
     CameraCtrl_s camctrl;
 
@@ -29,7 +31,7 @@ typedef struct Game {
 } Game;
 
 
-Game *game_new(eInput *input, Camera_s *cam, Sound *sound, PixelParticles *particles);
+Game *game_new(eInput *input, Camera_s *cam, Sound *sound, PixelParticles *particles, const char *name);
 
 void game_kill(Game **self_ptr);
 

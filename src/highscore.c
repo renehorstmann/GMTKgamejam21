@@ -11,6 +11,10 @@
 #include "rhc/dynarray.h"
 
 
+#ifndef HIGHSCORE_SECRET_KEY
+#define HIGHSCORE_SECRET_KEY 12345
+#endif
+
 
 /**
  * HTTP Server API:
@@ -35,6 +39,19 @@
 // protected
 //
 
+uint64_t highscore_entry_get_checksum(HighscoreEntry_s self) {
+    uint64_t hash = HIGHSCORE_SECRET_KEY; 
+    hash *= self.score;
+    
+    const char *str = self.name;
+    
+    int c;
+    while ((c = *str++)) 
+        hash = ((hash << 5) + hash) + c;
+    
+    
+    return hash;
+}
 
 HighscoreEntry_s highscore_entry_decode(Str_s entry) {
     if (entry.size > HIGHSCORE_MAX_ENTRY_LENGTH - 1) {
@@ -51,7 +68,7 @@ HighscoreEntry_s highscore_entry_decode(Str_s entry) {
     char *end;
     int score = (int) strtol(splits[0].data, &end, 10);
 
-    if (end != splits[1].data - 1 || splits[1].size == 0 || splits[1].size >= HIGHSCORE_NAME_MAX_LENGTH) {
+    if (end != splits[1].data - 1 || splits[1].size == 0 || splits[1].size > HIGHSCORE_NAME_MAX_LENGTH) {
         log_warn("highscore_entry_decode failed to parse entry, invalid score or name length");
         return (HighscoreEntry_s) {0};
     }
@@ -127,7 +144,7 @@ void highscore_kill(Highscore *self) {
 }
 
 HighscoreEntry_s highscore_entry_new(const char *name, int score) {
-    assume(strlen(name) < HIGHSCORE_NAME_MAX_LENGTH, "highscore_entry_new failed, name too long");
+    assume(strlen(name) <= HIGHSCORE_NAME_MAX_LENGTH, "highscore_entry_new failed, name too long");
     HighscoreEntry_s self = {0};
     strcpy(self.name, name);
     self.score = score;
