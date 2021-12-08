@@ -48,10 +48,11 @@ static void set_score(ShowScore *self) {
         if(e >= h->entries_size)
             break;
         char line[LINE_LEN+1]; // + null
-        snprintf(line, sizeof line, "%4i:%.*s %i\n", 
-                e+1, HIGHSCORE_NAME_MAX_LENGTH, 
-                h->entries[e].name, 
-                h->entries[e].score);
+        snprintf(line, sizeof line, "%4i:%i %.*s\n", 
+                e+1, 
+                h->entries[e].score,
+                HIGHSCORE_NAME_MAX_LENGTH, 
+                h->entries[e].name);
         used += snprintf(text + used, sizeof text - used, "%s\n", line);
     }
     
@@ -70,6 +71,7 @@ ShowScore *showscore_new(const char *name, int score) {
     ro_text_set_text(&self->L.title, "Highscore:");
     
     self->L.score = ro_text_new_font85(LINE_LEN*ROWS);
+    self->L.score.offset.y = 5;
     ro_text_set_text(&self->L.score, "loading...");
     
     self->L.btns = ro_batch_new(3, r_texture_new_file(2, 3, "res/highscore_btns.png"));
