@@ -45,3 +45,10 @@ Add the following changes to the generated index.html:
 </script>
 ```
 This will let Emscripten run in fullscreen and display an error text, if the app / game is not able to run (WebGL2.0 support missing)
+
+
+## Todo
+- README Licence, author...
+- ro text pose default size or offset bug?
+- showscore btns dont work
+- fetch curl seems to be synchronous?
