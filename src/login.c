@@ -19,6 +19,20 @@ static void start_textinput(Login *self) {
     strcpy(self->L.textinput->out.text, self->out.name);
 }
 
+static bool name_valid(const char *name) {
+    Str_s n = str_strip(strc(name), ' ');
+    int cnt_spaces = str_count(n, ' ');
+    int cnt_non_space = n.size - cnt_spaces;
+    return cnt_non_space >= LOGIN_NAME_MIN_LENGTH
+            && n.size <= LOGIN_NAME_MAX_LENGTH;
+}
+
+static void name_copy(Login *self, const char *src) {
+    assume(name_valid(src), "wtf");
+    Str_s out = str_strip(strc(src), ' ');
+    str_as_c(self->out.name, out);
+}
+
 static void pointer_callback(ePointer_s pointer, void *user_data) {
     Login *self = user_data;
 
@@ -35,15 +49,6 @@ static void pointer_callback(ePointer_s pointer, void *user_data) {
         log_info("login: rename");
         start_textinput(self);
     }
-}
-
-static bool name_valid(const char *name) {
-    int cnt_non_space = 0;
-    while(*name) {
-        if(!isspace(*name++))
-            cnt_non_space++;
-    }
-    return cnt_non_space >= LOGIN_NAME_MIN_LENGTH;
 }
 
 Login *login_new(eInput *input, const Camera_s *cam) {
@@ -69,8 +74,7 @@ Login *login_new(eInput *input, const Camera_s *cam) {
     // init name
     String name = e_io_savestate_read("name.txt", true);
     if (string_valid(name) && name_valid(name.data)) {
-        // strncpy does not set null terminator, but out.name is initialized with zeros and has LOGIN_NAME_MAX_LENGTH+1
-        strncpy(self->out.name, name.data, name.size < LOGIN_NAME_MAX_LENGTH ? name.size : LOGIN_NAME_MAX_LENGTH);
+        name_copy(self, name.data);
     } else {
         firstname_generate(self->out.name);
         start_textinput(self);
@@ -114,7 +118,7 @@ void login_update(Login *self, float dtime) {
             textinput_kill(&self->L.textinput);
             self->L.textinput = NULL;   // just to be safe here...
         } else if(self->L.textinput->out.state == TEXTINPUT_DONE) {
-            strcpy(self->out.name, self->L.textinput->out.text);
+            name_copy(self, self->L.textinput->out.text);
             textinput_kill(&self->L.textinput);
             self->L.textinput = NULL;   // just to be safe here...
         }
