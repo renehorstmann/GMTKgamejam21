@@ -14,7 +14,7 @@
 #define LINE_LEN 32  // 1000:NAME16 SCORE
 #define ROWS 8
 
-#define SCORE_URL "https://rohl.svenhuis.de/api/swarm"
+#define SCORE_URL "https://rohl.svenuis.de/api/swarm"
 
 #ifndef SCORE_URL
 #define SCORE_URL "http://127.0.0.1:1000/api/swarm"
@@ -26,6 +26,8 @@ static void fetch_score(ShowScore *self) {
         log_error("showscore fetch failed, already fetching...");
         return;
     }
+    ro_text_set_text(&self->L.score, "loading...");
+    
     String entry = highscore_entry_to_string(
             highscore_entry_new(self->name_ref, self->user_score)
             );
@@ -48,7 +50,7 @@ static void set_score(ShowScore *self) {
         if(e >= h->entries_size)
             break;
         char line[LINE_LEN+1]; // + null
-        snprintf(line, sizeof line, "%4i:%i %.*s\n", 
+        snprintf(line, sizeof line, "%4i:%i %.*s", 
                 e+1, 
                 h->entries[e].score,
                 HIGHSCORE_NAME_MAX_LENGTH, 
@@ -65,16 +67,19 @@ ShowScore *showscore_new(const char *name, int score) {
     self->name_ref = name;
     self->user_score = score;
     
-    fetch_score(self);
-    
     self->L.title = ro_text_new_font55(10);
     ro_text_set_text(&self->L.title, "Highscore:");
     
     self->L.score = ro_text_new_font85(LINE_LEN*ROWS);
-    self->L.score.offset.y = 5;
-    ro_text_set_text(&self->L.score, "loading...");
+    self->L.score.offset.y = 10;
     
     self->L.btns = ro_batch_new(3, r_texture_new_file(2, 3, "res/highscore_btns.png"));
+    self->L.btns.rects[0].sprite.y = 2;
+    self->L.btns.rects[1].sprite.y = 0;
+    self->L.btns.rects[2].sprite.y = 1;
+    
+    
+    fetch_score(self);
     
     return self;
 }

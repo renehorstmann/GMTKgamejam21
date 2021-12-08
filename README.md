@@ -49,6 +49,6 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 
 ## Todo
 - README Licence, author...
-- ro text pose default size or offset bug?
 - showscore btns dont work
 - fetch curl seems to be synchronous?
+- fetch timeout? 
