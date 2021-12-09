@@ -3,6 +3,7 @@
 
 /*
  * PixelPerfect canvas camera with view matrix.
+ * So a unit has an integral number of pixels, until its <1 (units_per_pixels aka scale)
  * To control the camera position and size
  */
 
@@ -30,7 +31,7 @@ typedef struct {
 
 
     struct {
-        float real_pixel_per_pixel;
+        float scale; // units per pixel
         float left, right, bottom, top;
     } RO; // read only
 

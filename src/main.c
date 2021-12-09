@@ -100,7 +100,7 @@ static void render(eSimple *simple, ivec2 window_size, float dtime) {
     if(L.game)
         game_render_main(L.game, cam_main_mat);
 
-    bubbles_render(L.bubbles, cam_hud_mat, L.camera.RO.real_pixel_per_pixel);
+    bubbles_render(L.bubbles, cam_hud_mat, L.camera.RO.scale);
 
     if(L.login)
         login_render(L.login, cam_hud_mat);
