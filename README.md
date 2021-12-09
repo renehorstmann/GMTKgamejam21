@@ -50,9 +50,8 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 
 
 ## Todo
-- highscore server first winner stays top
-  - qsort is undefined for equal elements
-  - selfmade bubble sort...
+- colored own score (if available)
+- page to own score (if available)
 - build with keys
 - backuo scripts
 - favicon.ico
