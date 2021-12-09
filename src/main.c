@@ -53,7 +53,8 @@ static void post_random() {
         firstname_generate(name);
         int score = (rand()%100)*100;
         String entry = highscore_entry_to_string(
-            highscore_entry_new(name, score)
+            //highscore_entry_new(name, score)
+            highscore_entry_new("BestPlayer_1993_", 1234567)
         );
         fetch = u_fetch_new_post("https://rohl.svenhuis.de/api/swarm", entry.str);
         string_kill(&entry);
@@ -75,7 +76,7 @@ static void update(eSimple *simple, ivec2 window_size, float dtime) {
     pixelparticles_update(L.particles, dtime);
 
     if(L.login) {
-        login_update(L.login, dtime);
+        login_update(L.login, window_size, dtime);
         if(L.login->out.done) {
             strcpy(L.name, L.login->out.name);
             login_kill(&L.login);

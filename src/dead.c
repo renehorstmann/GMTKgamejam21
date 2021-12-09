@@ -104,12 +104,12 @@ void dead_update(Dead *self, float dtime) {
 
     self->L.ro.rect.color.a = sca_mix(0.75, 0.1, self->L.time / RESCUE_TIME);
 
-    self->L.btn.rect.pose = u_pose_new(0, -40-64, 64, 64);
+    self->L.btn.rect.pose = u_pose_new(0, -20-64, 64, 64);
 
     self->L.credits.pose = u_pose_new(sca_floor(1 - CAMERA_SIZE / 2), sca_floor(self->cam_ref->RO.top - 1), 1, 1);
     
     if(self->showscore) {
-        self->showscore->in.pos = (vec2) {{-90, 100}};
+        self->showscore->in.pos = (vec2) {{-115, 105}};
         showscore_update(self->showscore, dtime);
     }
 }

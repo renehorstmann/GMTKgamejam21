@@ -49,6 +49,10 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 
 ## Todo
 - README Licence, author...
-- showscore btns dont work
-- fetch curl seems to be synchronous?
-- fetch timeout? 
+- fetch curl SDL lock after perform
+- fetch curl check abort return code of perform
+- highscore server first winner stays top
+- build with keys
+- backuo scripts
+- favicon.ico
+- some batch / particles rendern functions update flag

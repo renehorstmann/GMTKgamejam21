@@ -14,12 +14,14 @@
 #define LINE_LEN 32  // 1000:NAME16 SCORE
 #define ROWS 8
 
-#define SCORE_URL "https://rohl.svenuis.de/api/swarm"
+#define SCORE_URL "https://rohl.svenhuis.de/api/swarm"
 
 #ifndef SCORE_URL
 #define SCORE_URL "http://127.0.0.1:1000/api/swarm"
 #endif
 
+
+#define CAM_SIZE_FACTOR (240.0f/180.0f)
 
 static void fetch_score(ShowScore *self) {
     if(self->L.fetch) {
@@ -50,7 +52,7 @@ static void set_score(ShowScore *self) {
         if(e >= h->entries_size)
             break;
         char line[LINE_LEN+1]; // + null
-        snprintf(line, sizeof line, "%4i:%i %.*s", 
+        snprintf(line, sizeof line, "#%-2i %i %.*s", 
                 e+1, 
                 h->entries[e].score,
                 HIGHSCORE_NAME_MAX_LENGTH, 
@@ -69,15 +71,15 @@ ShowScore *showscore_new(const char *name, int score) {
     
     self->L.title = ro_text_new_font55(10);
     ro_text_set_text(&self->L.title, "Highscore:");
+    ro_text_set_color(&self->L.title, (vec4) {{0, 0, 0, 0.5}});
     
     self->L.score = ro_text_new_font85(LINE_LEN*ROWS);
     self->L.score.offset.y = 10;
+    ro_text_set_color(&self->L.score, R_COLOR_BLACK);
     
-    self->L.btns = ro_batch_new(3, r_texture_new_file(2, 3, "res/highscore_btns.png"));
-    self->L.btns.rects[0].sprite.y = 2;
-    self->L.btns.rects[1].sprite.y = 0;
-    self->L.btns.rects[2].sprite.y = 1;
-    
+    self->L.btns = ro_batch_new(3, r_texture_new_file(2, 3, "res/showscore_btns.png"));
+    for(int i=0; i<3; i++)
+        self->L.btns.rects[i].sprite.y = i;
     
     fetch_score(self);
     
@@ -123,8 +125,10 @@ void showscore_update(ShowScore *self, float dtime) {
     
     
     // set poses
-    self->L.title.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y, 2, 2);
-    self->L.score.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y - 12, 1, 1);
+    self->L.title.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y, 
+            2, 2);
+    self->L.score.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y - 18, 
+            1*CAM_SIZE_FACTOR, 1*CAM_SIZE_FACTOR);
     
     
     Highscore *h = self->L.highscore;
@@ -132,18 +136,21 @@ void showscore_update(ShowScore *self, float dtime) {
     
     
     if(!h && !self->L.fetch)
-        self->L.btns.rects[0].pose = u_pose_new_aa(self->in.pos.x + 130, self->in.pos.y, 16, 16);
+        self->L.btns.rects[0].pose = u_pose_new_aa(self->in.pos.x + 140, self->in.pos.y, 
+                32, 16);
     else 
         self->L.btns.rects[0].pose = u_pose_new_hidden();
         
         
     if(h && self->L.page>0) 
-        self->L.btns.rects[1].pose = u_pose_new_aa(self->in.pos.x + 130, self->in.pos.y, 16, 16);
+        self->L.btns.rects[1].pose = u_pose_new_aa(self->in.pos.x + 140, self->in.pos.y,
+                32, 16);
     else
         self->L.btns.rects[1].pose = u_pose_new_hidden();
     
     if(h && self->L.page<pages-1) 
-        self->L.btns.rects[2].pose = u_pose_new_aa(self->in.pos.x + 150, self->in.pos.y, 16, 16);
+        self->L.btns.rects[2].pose = u_pose_new_aa(self->in.pos.x + 180, self->in.pos.y, 
+                32, 16);
     else
         self->L.btns.rects[2].pose = u_pose_new_hidden();
         
@@ -180,8 +187,8 @@ void showscore_pointer(ShowScore *self, ePointer_s pointer) {
         set_score(self);
     }
     
-    // page up (to the top, so --)
-    if(button_clicked(&self->L.btns.rects[1], pointer)) {
+    // page down
+    if(button_clicked(&self->L.btns.rects[2], pointer)) {
         self->L.page = isca_min(pages-1, self->L.page+1);
         set_score(self);
     }

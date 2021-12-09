@@ -15,7 +15,7 @@
 _Static_assert(FIRSTNAME_MAX_LENGTH <= LOGIN_NAME_MAX_LENGTH, "wtf");
 
 static void start_textinput(Login *self) {
-    self->L.textinput = textinput_new(self->input_ref, self->cam_ref, "Your name:", LOGIN_NAME_MAX_LENGTH);
+    self->L.textinput = textinput_new(self->input_ref, "Your name:", LOGIN_NAME_MAX_LENGTH);
     strcpy(self->L.textinput->out.text, self->out.name);
 }
 
@@ -84,7 +84,7 @@ Login *login_new(eInput *input, const Camera_s *cam) {
     // poses
     self->L.title.pose = u_pose_new(-80, 80, 4, 4);
     self->L.yourname.pose = u_pose_new(-60, 40, 2, 2);
-    self->L.name.pose = u_pose_new(-60, 10, 1, 1);
+    self->L.name.pose = u_pose_new(-60, 10, 1.5, 1.5);
 
     // box around yourname and name text fields
     self->L.name_click_box = u_pose_new_aa(-60, 40,
@@ -108,11 +108,11 @@ void login_kill(Login **self_ptr) {
     *self_ptr = NULL;
 }
 
-void login_update(Login *self, float dtime) {
+void login_update(Login *self, ivec2 window_size, float dtime) {
     if(self->L.textinput) {
         self->L.textinput->in.ok_active = name_valid(self->L.textinput->out.text);
 
-        textinput_update(self->L.textinput, dtime);
+        textinput_update(self->L.textinput, window_size, dtime);
 
         if(self->L.textinput->out.state == TEXTINPUT_CANCELED) {
             textinput_kill(&self->L.textinput);
@@ -131,7 +131,7 @@ void login_render(const Login *self, const mat4 *hud_cam_mat) {
     ro_text_render(&self->L.title, hud_cam_mat);
 
     if(self->L.textinput) {
-        textinput_render(self->L.textinput, hud_cam_mat);
+        textinput_render(self->L.textinput);
     } else {
         ro_text_render(&self->L.yourname, hud_cam_mat);
         ro_text_render(&self->L.name, hud_cam_mat);

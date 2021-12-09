@@ -54,7 +54,8 @@ void game_update(Game *self, float dtime) {
     self->camctrl.in.dst = fish_swarm_center(self->fish);
     while (self->feed->out.score > 0) {
         self->feed->out.score--;
-        hud_score(self->hud);
+        if(self->fish->game_running)
+            hud_score(self->hud);
     }
 }
 

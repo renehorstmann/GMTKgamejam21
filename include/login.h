@@ -12,7 +12,7 @@
 typedef struct {
     eInput *input_ref;
     const Camera_s *cam_ref;
-
+    
     struct {
         char name[LOGIN_NAME_MAX_LENGTH + 1]; // + null terminator
         bool done;
@@ -32,7 +32,7 @@ Login *login_new(eInput *input, const Camera_s *cam);
 
 void login_kill(Login **self_ptr);
 
-void login_update(Login *self, float dtime);
+void login_update(Login *self, ivec2 window_size, float dtime);
 
 void login_render(const Login *self, const mat4 *hud_cam_mat);
 
