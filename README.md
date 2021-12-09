@@ -12,7 +12,9 @@ Emscripten compiled [live demo](https://renehorstmann.github.io/gmtk21/)
 Based on [some](http://github.com/renehorstmann/some) framework.
 
 
-# compile in emscripten:
+## Compiling for Web
+
+Using Emscripten:
 ```sh
 mkdir web && cd web
 ```
@@ -48,7 +50,6 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 
 
 ## Todo
-- README Licence, author...
 - fetch curl SDL lock after perform
 - fetch curl check abort return code of perform
 - highscore server first winner stays top
@@ -56,3 +57,12 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 - backuo scripts
 - favicon.ico
 - some batch / particles rendern functions update flag
+
+
+## Author
+René Horstmann
+
+## Licence
+- The game and its assets are licenced under GPLv3, see LICENCE.
+- The [some](https://github.com/renehorstmann/some) framework is under MIT licence, see someLICENCE.
+- Have a look at [some_examples](https://github.com/renehorstmann/some_examples) for some shared modules, under the MIT licence
