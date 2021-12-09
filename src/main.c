@@ -66,7 +66,7 @@ static void post_random() {
 
 // this functions is called either each frame or at a specific update/s time
 static void update(eSimple *simple, ivec2 window_size, float dtime) {
-//    post_random();
+    post_random();
     
     camera_update(&L.camera, window_size);
 

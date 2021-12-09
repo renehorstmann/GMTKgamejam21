@@ -53,7 +53,6 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 - colored own score (if available)
 - page to own score (if available)
 - build with keys
-- backuo scripts
 - favicon.ico
 - some batch / particles rendern functions update flag
 
