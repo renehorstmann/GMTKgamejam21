@@ -53,6 +53,8 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 - fetch curl SDL lock after perform
 - fetch curl check abort return code of perform
 - highscore server first winner stays top
+  - qsort is undefined for equal elements
+  - selfmade bubble sort...
 - build with keys
 - backuo scripts
 - favicon.ico
