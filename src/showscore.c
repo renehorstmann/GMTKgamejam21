@@ -100,8 +100,8 @@ void showscore_kill(ShowScore **self_ptr) {
 }
 
 void showscore_update(ShowScore *self, float dtime) {
-    int code = 0;
-    String res = u_fetch_check_response(&self->L.fetch, &code);
+    bool error = 0;
+    String res = u_fetch_check_response(&self->L.fetch, &error);
     if(string_valid(res)) {
         if(self->L.highscore)
             highscore_kill(self->L.highscore);
@@ -110,16 +110,14 @@ void showscore_update(ShowScore *self, float dtime) {
         *self->L.highscore = highscore_new_msg(res.str);
         self->L.page = 0;
         set_score(self);
-    } else if(code) {
+    } else if(error) {
         if(self->L.highscore) {
             highscore_kill(self->L.highscore);
             rhc_free(self->L.highscore);
             self->L.highscore = NULL;
         }
-        
-        char error_text[64];
-        snprintf(error_text, 64, "connection error: %i", code);
-        ro_text_set_text(&self->L.score, error_text);
+
+        ro_text_set_text(&self->L.score, "connection error");
     }
     string_kill(&res);
     

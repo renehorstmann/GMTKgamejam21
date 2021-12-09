@@ -53,8 +53,8 @@ static void post_random() {
         firstname_generate(name);
         int score = (rand()%100)*100;
         String entry = highscore_entry_to_string(
-            //highscore_entry_new(name, score)
-            highscore_entry_new("BestPlayer_1993_", 1234567)
+            highscore_entry_new(name, score)
+//            highscore_entry_new("BestPlayer_1993_", 1234567)
         );
         fetch = u_fetch_new_post("https://rohl.svenhuis.de/api/swarm", entry.str);
         string_kill(&entry);
@@ -66,7 +66,7 @@ static void post_random() {
 
 // this functions is called either each frame or at a specific update/s time
 static void update(eSimple *simple, ivec2 window_size, float dtime) {
-    //post_random();
+//    post_random();
     
     camera_update(&L.camera, window_size);
 
