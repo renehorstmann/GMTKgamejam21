@@ -50,8 +50,7 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 
 
 ## Todo
-- fetch curl SDL lock after perform
-- fetch curl check abort return code of perform
+- pixel perfect cam scale as rpp and scale <1
 - highscore server first winner stays top
   - qsort is undefined for equal elements
   - selfmade bubble sort...
