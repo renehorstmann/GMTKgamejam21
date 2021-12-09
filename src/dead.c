@@ -109,7 +109,7 @@ void dead_update(Dead *self, float dtime) {
     self->L.credits.pose = u_pose_new(sca_floor(1 - CAMERA_SIZE / 2), sca_floor(self->cam_ref->RO.top - 1), 1, 1);
     
     if(self->showscore) {
-        self->showscore->in.pos = (vec2) {{-115, 105}};
+        self->showscore->in.pos = (vec2) {{-115, 100}};
         showscore_update(self->showscore, dtime);
     }
 }
