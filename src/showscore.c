@@ -98,7 +98,7 @@ ShowScore *showscore_new(const char *name, int score) {
     self->user_score = score;
     
     self->L.title = ro_text_new_font55(10);
-    ro_text_set_text(&self->L.title, "Highscore:");
+    ro_text_set_text(&self->L.title, "Haiscore:");
     ro_text_set_color(&self->L.title, (vec4) {{0, 0, 0, 0.5}});
     
     self->L.score = ro_text_new_font85(LINE_LEN*ROWS);
