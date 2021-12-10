@@ -45,6 +45,9 @@ static void set_score(ShowScore *self) {
     int pages = 1 + h->entries_size / ROWS;
     assume(self->L.page>=0 && self->L.page<pages, "wtf");
     
+    int own_text_begin = 0;
+    int own_text_len = 0;
+    
     char text[ROWS*(LINE_LEN+1)+1];
     size_t used = 0;
     for(int i=0; i<ROWS; i++) {
@@ -52,15 +55,33 @@ static void set_score(ShowScore *self) {
         if(e >= h->entries_size)
             break;
         char line[LINE_LEN+1]; // + null
-        snprintf(line, sizeof line, "#%-2i %i %.*s", 
+        int line_len = snprintf(line, sizeof line, "#%-2i %i %.*s", 
                 e+1, 
                 h->entries[e].score,
                 HIGHSCORE_NAME_MAX_LENGTH, 
                 h->entries[e].name);
         used += snprintf(text + used, sizeof text - used, "%s\n", line);
+        
+        if(strcmp(self->name_ref, h->entries[e].name) == 0) {
+            own_text_len = line_len;
+            
+        } else if(own_text_len == 0) {
+            own_text_begin += line_len;
+        }
     }
     
     ro_text_set_text(&self->L.score, text);
+    if(own_text_len==0) {
+        ro_text_set_color(&self->L.score, R_COLOR_WHITE);
+    } else {
+        for(int i=0; i<self->L.score.ro.num; i++) {
+            vec4 col = i<own_text_begin && i>=own_text_begin+own_text_len ? 
+                    R_COLOR_WHITE 
+                    : (vec4) {{0.2, 0.2, 1.0, 1.0}};
+            self->L.score.ro.rects[i].color = col;
+        }
+        ro_batch_update(&self->L.score.ro);
+    }
 }
 
 ShowScore *showscore_new(const char *name, int score) {
@@ -109,6 +130,17 @@ void showscore_update(ShowScore *self, float dtime) {
             self->L.highscore = rhc_malloc(sizeof *self->L.highscore);
         *self->L.highscore = highscore_new_msg(res.str);
         self->L.page = 0;
+        
+        // find page
+        for(int i=0; i<self->L.highscore->entries_size; i++) {
+            if(strcmp(self->name_ref, 
+                    self->L.highscore->entries[i].name
+                    ) == 0) {
+                self->L.page = i / ROWS;
+                break;
+            }
+        }
+        
         set_score(self);
     } else if(error) {
         if(self->L.highscore) {
