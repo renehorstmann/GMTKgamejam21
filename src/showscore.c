@@ -23,6 +23,11 @@
 
 #define CAM_SIZE_FACTOR (240.0f/180.0f)
 
+
+static const vec4 SCORE_COLOR = {{1, 1, 1, 0.8}};
+static const vec4 SCORE_OWN_COLOR = {{0.2, 0.2, 1.0, 1.0}};
+    
+
 static void fetch_score(ShowScore *self) {
     if(self->L.fetch) {
         log_error("showscore fetch failed, already fetching...");
@@ -42,7 +47,7 @@ static void set_score(ShowScore *self) {
     Highscore *h = self->L.highscore;
     if(!h)
         return;
-    int pages = 1 + h->entries_size / ROWS;
+    int pages = 1 + (h->entries_size-1) / ROWS;
     assume(self->L.page>=0 && self->L.page<pages, "wtf");
     
     int own_text_begin = 0;
@@ -71,13 +76,13 @@ static void set_score(ShowScore *self) {
     }
     
     ro_text_set_text(&self->L.score, text);
+    
     if(own_text_len==0) {
-        ro_text_set_color(&self->L.score, R_COLOR_WHITE);
+        ro_text_set_color(&self->L.score, SCORE_COLOR);
     } else {
         for(int i=0; i<self->L.score.ro.num; i++) {
             vec4 col = i<own_text_begin && i>=own_text_begin+own_text_len ? 
-                    R_COLOR_WHITE 
-                    : (vec4) {{0.2, 0.2, 1.0, 1.0}};
+                    SCORE_COLOR : SCORE_OWN_COLOR;
             self->L.score.ro.rects[i].color = col;
         }
         ro_batch_update(&self->L.score.ro);
@@ -96,7 +101,7 @@ ShowScore *showscore_new(const char *name, int score) {
     
     self->L.score = ro_text_new_font85(LINE_LEN*ROWS);
     self->L.score.offset.y = 10;
-    ro_text_set_color(&self->L.score, R_COLOR_BLACK);
+    ro_text_set_color(&self->L.score, SCORE_COLOR);
     
     self->L.btns = ro_batch_new(3, r_texture_new_file(2, 3, "res/showscore_btns.png"));
     for(int i=0; i<3; i++)
@@ -150,6 +155,22 @@ void showscore_update(ShowScore *self, float dtime) {
         }
 
         ro_text_set_text(&self->L.score, "connection error");
+        
+        // test
+        /*
+        Highscore *h = rhc_calloc(sizeof *h);
+        h->entries_size = 256;
+        h->entries = rhc_calloc(sizeof *h->entries * h->entries_size);
+        for(int i=0; i<h->entries_size; i++) {
+            h->entries[i].score = i*1100;
+            char name[32];
+            sprintf(name, "Test %i", i);
+            strcpy(h->entries[i].name, name);
+        }
+        self->L.highscore = h;
+        set_score(self);
+        */
+        
     }
     string_kill(&res);
     
@@ -162,7 +183,7 @@ void showscore_update(ShowScore *self, float dtime) {
     
     
     Highscore *h = self->L.highscore;
-    int pages = !h? 0 : 1 + h->entries_size / ROWS;
+    int pages = !h? 0 : 1 + (h->entries_size-1) / ROWS;
     
     
     if(!h && !self->L.fetch)
@@ -208,7 +229,7 @@ void showscore_pointer(ShowScore *self, ePointer_s pointer) {
     Highscore *h = self->L.highscore;
     if(!h)
         return;
-    int pages = 1 + h->entries_size / ROWS;
+    int pages = 1 + (h->entries_size-1) / ROWS;
     
     
     // page up (to the top, so --)

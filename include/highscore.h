@@ -16,9 +16,6 @@ typedef struct {
 } HighscoreEntry_s;
 
 typedef struct {
-    char topic[HIGHSCORE_TOPIC_MAX_LENGTH];   // null terminated
-    char address[HIGHSCORE_ADDRESS_MAX_LENGTH];   // null terminated
-    uint16_t port;
     HighscoreEntry_s *entries;
     int entries_size;
 } Highscore;
