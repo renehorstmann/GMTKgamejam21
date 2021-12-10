@@ -4,7 +4,7 @@
 #include "mathc/sca/float.h"
 #include "sound.h"
 
-#define FEED_PER_SECOND 4
+#define FEED_PER_SECOND 1.5
 
 struct Sound {
     eInput *input_ref;
