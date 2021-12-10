@@ -83,11 +83,10 @@ void feed_update(Feed *self, float dtime) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();
     }
 
-    ro_batch_update(&self->L.ro);
 }
 
 void feed_render(const Feed *self, const mat4 *cam_mat) {
-    ro_batch_render(&self->L.ro, cam_mat);
+    ro_batch_render(&self->L.ro, cam_mat, true);
 }
 
 void feed_eat(Feed *self, FeedItem_s *item, float time) {

@@ -220,17 +220,13 @@ void showscore_update(ShowScore *self, float dtime) {
     else
         self->L.btns.rects[2].pose = u_pose_new_hidden();
         
-    
-    
-    ro_batch_update(&self->L.btns);
-    
 }
 
 
 void showscore_render(const ShowScore *self, const mat4 *hudcam_mat) {
     ro_text_render(&self->L.title, hudcam_mat);
     ro_text_render(&self->L.score, hudcam_mat);
-    ro_batch_render(&self->L.btns, hudcam_mat);
+    ro_batch_render(&self->L.btns, hudcam_mat, true);
 }
 
 void showscore_pointer(ShowScore *self, ePointer_s pointer) {

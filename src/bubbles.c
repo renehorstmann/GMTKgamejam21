@@ -51,9 +51,8 @@ void bubbles_update(Bubbles *self, float dtime) {
         if (self->L.ro.rects[i].start_time < self->L.time - MAX_TIME)
             self->L.ro.rects[i].start_time = self->L.time;
     }
-    ro_particlerefract_update(&self->L.ro);
 }
 
 void bubbles_render(const Bubbles *self, const mat4 *cam_mat, float cam_scale) {
-    ro_particlerefract_render(&self->L.ro, self->L.time, cam_mat, cam_scale, NULL, NULL);
+    ro_particlerefract_render(&self->L.ro, self->L.time, cam_mat, cam_scale, NULL, NULL, true);
 }

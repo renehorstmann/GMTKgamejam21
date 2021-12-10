@@ -126,10 +126,9 @@ void shark_update(Shark *self, float dtime) {
     for (int i = self->shark_size; i < SHARK_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();
     }
-    ro_batch_update(&self->L.ro);
 }
 
 void shark_render(const Shark *self, const mat4 *cam_mat) {
-    ro_batch_render(&self->L.ro, cam_mat);
+    ro_batch_render(&self->L.ro, cam_mat, true);
 }
 

@@ -326,9 +326,6 @@ void textinput_update(TextInput *self, ivec2 window_size, float dtime) {
             self->L.cam.left, self->L.cam.top,
             self->L.cam.width, self->L.cam.height);
 
-    ro_batch_update(&self->L.keys);
-    ro_batch_update(&self->L.chars);
-    ro_batch_update(&self->L.special);
 }
 
 void textinput_render(const TextInput *self) {
@@ -339,9 +336,9 @@ void textinput_render(const TextInput *self) {
 
     ro_text_render(&self->L.title, cam_mat);
     ro_text_render(&self->L.textfield, cam_mat);
-    ro_batch_render(&self->L.keys, cam_mat);
-    ro_batch_render(&self->L.chars, cam_mat);
+    ro_batch_render(&self->L.keys, cam_mat, true);
+    ro_batch_render(&self->L.chars, cam_mat, true);
     ro_single_render(&self->L.shift, cam_mat);
     ro_single_render(&self->L.space, cam_mat);
-    ro_batch_render(&self->L.special, cam_mat);
+    ro_batch_render(&self->L.special, cam_mat, true);
 }

@@ -310,11 +310,10 @@ void fish_update(Fish *self, float dtime) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();
     }
 
-    ro_batch_update(&self->L.ro);
 }
 
 void fish_render(const Fish *self, const mat4 *cam_mat) {
-    ro_batch_render(&self->L.ro, cam_mat);
+    ro_batch_render(&self->L.ro, cam_mat, true);
     ro_single_render(&self->L.move.ring_ro, cam_mat);
 }
 
