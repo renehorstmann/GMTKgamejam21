@@ -156,5 +156,6 @@ CMakeFiles
 
 ## some specific
 web/
+savestate_*
 some
 gmtkjam21
