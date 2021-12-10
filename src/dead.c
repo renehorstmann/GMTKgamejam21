@@ -124,8 +124,9 @@ void dead_render(const Dead *self, const mat4 *cam_mat) {
     ro_single_render(&self->L.ro, cam_mat);
     ro_text_render(&self->L.info, cam_mat);
     if(self->showscore)
-        showscore_render(self->showscore, cam_mat);
-    if (self->L.time <= 0)
+        showscore_render(self->showscore, cam_mat);    
+    if (self->L.time <= 0) {
         ro_single_render(&self->L.btn, cam_mat);
-    ro_text_render(&self->L.credits, cam_mat);
+        ro_text_render(&self->L.credits, cam_mat);
+    }
 }
