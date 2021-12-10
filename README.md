@@ -52,7 +52,7 @@ This will let Emscripten run in fullscreen and display an error text, if the app
 ## Todo
 - build with keys
 - favicon.ico
-- some batch / particles rendern functions update flag
+
 
 
 ## Author
