@@ -47,8 +47,8 @@ Dead *dead_new(eInput *input, const Camera_s *cam, Sound *sound, Fish *fish, Gam
     self->L.info = ro_text_new_font55(64);
     ro_text_set_color(&self->L.info, R_COLOR_BLACK);
 
-    self->L.credits = ro_text_new_font55(32);
-    ro_text_set_text(&self->L.credits, "\"swarm\" by horsimann");
+    self->L.credits = ro_text_new_font55(64);
+    ro_text_set_text(&self->L.credits, "\"swarm\" by horsimann\nspecial thanks to: dentur");
 
     return self;
 }
@@ -106,7 +106,10 @@ void dead_update(Dead *self, float dtime) {
 
     self->L.btn.rect.pose = u_pose_new(0, -20-64, 64, 64);
 
-    self->L.credits.pose = u_pose_new(sca_floor(1 - CAMERA_SIZE / 2), sca_floor(self->cam_ref->RO.top - 1), 1, 1);
+    self->L.credits.pose = u_pose_new_aa(
+            self->cam_ref->RO.left + 10, 
+            self->cam_ref->RO.bottom + 16, 
+            1, 1);
     
     if(self->showscore) {
         self->showscore->in.pos = (vec2) {{-115, 100}};
