@@ -9,14 +9,16 @@
 
 #define FIRSTNAME_MAX_LENGTH 16
 
+//#define LENGTH_TEST
+
 // out_name should be a buffer with at least FIRSTNAME_MAX_LENGTH+1 bytes (null terminator)
 static void firstname_generate(char *out_name) {
     const char *pre[] = {
             "super",
             "Super",
-            "SUPER",
+            "SUPEr",
             "ultra",
-            "ULTRA",
+            "ULTRa",
             "MEGA ",
             "Mega ",
             "mini ",
@@ -35,10 +37,8 @@ static void firstname_generate(char *out_name) {
             "Mrs ",
             "Lady ",
             "Ober ",
-            "CrAzY",
-            "fREAK",
-            "Nr:1 ",
-            "Nr:99",
+            "cRaZy",
+            "fREAk",
             "Spass",
             "Dr. ",
             "Ing. ",
@@ -50,13 +50,27 @@ static void firstname_generate(char *out_name) {
             "dumb ",
             "idiot",
             "asi ",
+            "Alpha",
+            "blue ",
+            "black",
+            "red ",
+            "fun ",
+            "nice ",
+            "smoky",
+            "hot ",
+            "HOT ",
+            "cool ",
+            "COOL ",
+            "Baby ",
             "",
             "",
             ""
     };
     size_t pre_len = sizeof pre / sizeof *pre;
-//    for (int i = 0; i < pre_len; i++)
-//        assume(strlen(pre[i]) <= 5, "wtf");
+#ifdef LENGTH_TEST
+    for (int i = 0; i < pre_len; i++)
+        assume(strlen(pre[i]) <= 5, "wtf");
+#endif
 
     const char *mid[] = {
             "Wolfgang",
@@ -195,12 +209,34 @@ static void firstname_generate(char *out_name) {
             "Lusche ",
             "Alki ",
             "Smoker ",
-            "Dulli",
-            "Bubi"
+            "Dulli ",
+            "Bubi ",
+            "Klaus ",
+            "Joko ",
+            "Pikachu ",
+            "Banane ",
+            "Hansi ",
+            "Hannes ",
+            "Franz ",
+            "Schoko ",
+            "Gunter ",
+            "Katja ",
+            "Sven ",
+            "Aladdin ",
+            "Homer ",
+            "Kevin ",
+            "Jasmin ",
+            "Silvia ",
+            "Angie ",
+            "Kiffer ",
+            "Baby"
+
     };
     size_t mid_len = sizeof mid / sizeof *mid;
-//    for (int i = 0; i < mid_len; i++)
-//        assume(strlen(mid[i]) <= 8, "wtf");
+#ifdef LENGTH_TEST
+    for (int i = 0; i < mid_len; i++)
+        assume(strlen(mid[i]) <= 8, "wtf");
+#endif
 
 
     const char *post[] = {
@@ -265,20 +301,19 @@ static void firstname_generate(char *out_name) {
             "383",
             "900",
             "100",
-            "GBR",
             "DDR",
             "USA",
             "DE",
             "EN",
-            "NE",
             "FR",
-            "POL",
+            "NL",
             ".",
             "..",
             "...",
             ".:.",
             ":.:",
             ":::",
+            " <3",
             "",
             "",
             "",
@@ -289,11 +324,13 @@ static void firstname_generate(char *out_name) {
             "",
             "",
             "",
-            "",
+            ""
     };
     size_t post_len = sizeof post / sizeof *post;
-//    for (int i = 0; i < post_len; i++)
-//        assume(strlen(post[i]) <= 3, "wtf");
+#ifdef LENGTH_TEST
+    for (int i = 0; i < post_len; i++)
+        assume(strlen(post[i]) <= 3, "wtf");
+#endif
 
     // random choice
     srand(time(NULL));
@@ -305,8 +342,8 @@ static void firstname_generate(char *out_name) {
     snprintf(out_name, FIRSTNAME_MAX_LENGTH + 1, "%s%s%s", used_pre, used_mid, used_post);
 
     // strip spaces right
-    char *it = out_name + (strlen(out_name)-1);
-    while(it > out_name && *it == ' ')
+    char *it = out_name + (strlen(out_name) - 1);
+    while (it > out_name && *it == ' ')
         *it-- = '\0';
 }
 
