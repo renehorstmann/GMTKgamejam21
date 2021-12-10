@@ -23,19 +23,31 @@ mkdir web && cd web
 emcc -I../include/ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s FULL_ES3=1 -s EXPORTED_FUNCTIONS='["_main", "_e_io_idbfs_synced"]' -s SDL2_IMAGE_FORMATS='["png"]'  --preload-file ../res -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s EXIT_RUNTIME=1 -s FETCH=1 -lidbfs.js -DOPTION_GLES -DOPTION_SDL -DOPTION_FETCH ../src/e/*.c ../src/p/*.c ../src/r/*.c ../src/u/*.c ../src/*.c -o index.html
 ```
 
-Add the following changes to the generated index.html:
+Copy the icons into the webpage
+
+````shell
+cp ../icon/* .
+````
+
+Add the following changes to the generated index.html (into the head...):
+
 ```html
+
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="icon180.png">
+<link rel="shortcut icon" href="icon196.png" sizes="196x196">
+
 <style>
-  #canvas {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    margin: 0px;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: block;
-  }
+    #canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: block;
+    }
 </style>
 <script>
     function set_error_img() {
