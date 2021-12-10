@@ -43,30 +43,10 @@ static void init(eSimple *simple, ivec2 window_size) {
 }
 
 
-#include "u/fetch.h"
-#include "firstname.h"
-#include "highscore.h"
-static void post_random() {
-    static uFetch *fetch = NULL;
-    if(!fetch) {
-        char name[128];
-        firstname_generate(name);
-        int score = (rand()%100)*100;
-        String entry = highscore_entry_to_string(
-            highscore_entry_new(name, score)
-//            highscore_entry_new("BestPlayer_1993_", 1234567)
-        );
-        fetch = u_fetch_new_post("https://rohl.svenhuis.de/api/swarm", entry.str);
-        string_kill(&entry);
-    }
-    String res = u_fetch_check_response(&fetch, NULL);
-    string_kill(&res);
-}
 
 
 // this functions is called either each frame or at a specific update/s time
 static void update(eSimple *simple, ivec2 window_size, float dtime) {
-    post_random();
     
     camera_update(&L.camera, window_size);
 
