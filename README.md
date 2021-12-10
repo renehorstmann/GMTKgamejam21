@@ -6,7 +6,7 @@ To survive you need at least three fishs in the swarm.
 Eat food to get more score points.
 
 ## Livedemo
-Emscripten compiled [live demo](https://renehorstmann.github.io/swarm/)
+[Emscripten compiled game](https://renehorstmann.github.io/swarm/)
 
 ## engine
 Based on [some](http://github.com/renehorstmann/some) framework.
