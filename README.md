@@ -12,6 +12,11 @@ Emscripten compiled [live demo](https://renehorstmann.github.io/swarm/)
 Based on [some](http://github.com/renehorstmann/some) framework.
 
 
+## Highscore
+The highscore system is run by the [HighscoreServer](https://github.com/renehorstmann/HighscoreServer) App.
+To use it, set your own HIGHSCORE_SECRET_KEY and SHOWSCORE_URL.
+The default will use your local running Highscoreserver (http://127.0.0.1:1000/api/swarm) with the key: 12345
+
 ## Compiling for Web
 
 Using Emscripten:
