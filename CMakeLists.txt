@@ -158,3 +158,19 @@ endif()
 # res
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
+# compile options:
+if(HIGHSCORE_SECRET_KEY)
+    message(-DHIGHSCORE_SECRET_KEY=${HIGHSCORE_SECRET_KEY})
+    add_definitions(-DHIGHSCORE_SECRET_KEY=${HIGHSCORE_SECRET_KEY})
+else()
+    message("No HIGHSCORE_SECRET_KEY")
+endif()
+
+if(SHOWSCORE_URL)
+    message(-DSHOWSCORE_URL=${SHOWSCORE_URL})
+    add_definitions(-DSHOWSCORE_URL=${SHOWSCORE_URL})
+else()
+    message("No SHOWSCORE_URL")
+endif()

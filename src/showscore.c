@@ -14,10 +14,9 @@
 #define LINE_LEN 32  // 1000:NAME16 SCORE
 #define ROWS 8
 
-#define SCORE_URL "https://rohl.svenhuis.de/api/swarm"
 
-#ifndef SCORE_URL
-#define SCORE_URL "http://127.0.0.1:1000/api/swarm"
+#ifndef SHOWSCORE_URL
+#define SHOWSCORE_URL "http://127.0.0.1:1000/api/swarm"
 #endif
 
 
@@ -38,7 +37,7 @@ static void fetch_score(ShowScore *self) {
     String entry = highscore_entry_to_string(
             highscore_entry_new(self->name_ref, self->user_score)
             );
-    self->L.fetch = u_fetch_new_post(SCORE_URL, entry.str);
+    self->L.fetch = u_fetch_new_post(SHOWSCORE_URL, entry.str);
     string_kill(&entry);
 }
 
@@ -91,6 +90,8 @@ static void set_score(ShowScore *self) {
 }
 
 ShowScore *showscore_new(const char *name, int score) {
+    log_info("showscore_new, URL=<%s>", SHOWSCORE_URL);
+
     ShowScore *self = rhc_calloc(sizeof *self);
     
     self->name_ref = name;
