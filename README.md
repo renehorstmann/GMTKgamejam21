@@ -6,7 +6,7 @@ To survive you need at least three fishs in the swarm.
 Eat food to get more score points.
 
 ## Livedemo
-Emscripten compiled [live demo](https://renehorstmann.github.io/gmtk21/)
+Emscripten compiled [live demo](https://renehorstmann.github.io/swarm/)
 
 ## engine
 Based on [some](http://github.com/renehorstmann/some) framework.
@@ -47,12 +47,6 @@ Add the following changes to the generated index.html:
 </script>
 ```
 This will let Emscripten run in fullscreen and display an error text, if the app / game is not able to run (WebGL2.0 support missing)
-
-
-## Todo
-- build with keys
-- favicon.ico
-
 
 
 ## Author
