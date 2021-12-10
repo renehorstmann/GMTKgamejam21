@@ -25,7 +25,7 @@
 
 
 static const vec4 SCORE_COLOR = {{1, 1, 1, 0.8}};
-static const vec4 SCORE_OWN_COLOR = {{0.2, 0.2, 1.0, 1.0}};
+static const vec4 SCORE_OWN_COLOR = {{0.0, 1.0, 0.5, 1.0}};
     
 
 static void fetch_score(ShowScore *self) {
@@ -60,12 +60,13 @@ static void set_score(ShowScore *self) {
         if(e >= h->entries_size)
             break;
         char line[LINE_LEN+1]; // + null
-        int line_len = snprintf(line, sizeof line, "#%-2i %i %.*s", 
+        snprintf(line, sizeof line, "#%-2i %i %.*s", 
                 e+1, 
                 h->entries[e].score,
                 HIGHSCORE_NAME_MAX_LENGTH, 
                 h->entries[e].name);
-        used += snprintf(text + used, sizeof text - used, "%s\n", line);
+        int line_len = snprintf(text + used, sizeof text - used, "%s\n", line);
+        used += line_len;
         
         if(strcmp(self->name_ref, h->entries[e].name) == 0) {
             own_text_len = line_len;
@@ -81,7 +82,7 @@ static void set_score(ShowScore *self) {
         ro_text_set_color(&self->L.score, SCORE_COLOR);
     } else {
         for(int i=0; i<self->L.score.ro.num; i++) {
-            vec4 col = i<own_text_begin && i>=own_text_begin+own_text_len ? 
+            vec4 col = i<own_text_begin || i>=own_text_begin+own_text_len ? 
                     SCORE_COLOR : SCORE_OWN_COLOR;
             self->L.score.ro.rects[i].color = col;
         }
@@ -134,9 +135,9 @@ void showscore_update(ShowScore *self, float dtime) {
         else
             self->L.highscore = rhc_malloc(sizeof *self->L.highscore);
         *self->L.highscore = highscore_new_msg(res.str);
-        self->L.page = 0;
         
         // find page
+        self->L.page = 0;
         for(int i=0; i<self->L.highscore->entries_size; i++) {
             if(strcmp(self->name_ref, 
                     self->L.highscore->entries[i].name
@@ -154,20 +155,34 @@ void showscore_update(ShowScore *self, float dtime) {
             self->L.highscore = NULL;
         }
 
-        ro_text_set_text(&self->L.score, "connection error");
+        ro_text_set_text(&self->L.score, "connection error :(");
         
-        // test
+        // test 
         /*
         Highscore *h = rhc_calloc(sizeof *h);
         h->entries_size = 256;
         h->entries = rhc_calloc(sizeof *h->entries * h->entries_size);
         for(int i=0; i<h->entries_size; i++) {
             h->entries[i].score = i*1100;
+            if(i == 107) {
+                strcpy(h->entries[i].name, self->name_ref);
+                continue;
+            }
             char name[32];
             sprintf(name, "Test %i", i);
             strcpy(h->entries[i].name, name);
         }
         self->L.highscore = h;
+        // find page
+        self->L.page = 0;
+        for(int i=0; i<self->L.highscore->entries_size; i++) {
+            if(strcmp(self->name_ref, 
+                    self->L.highscore->entries[i].name
+                    ) == 0) {
+                self->L.page = i / ROWS;
+                break;
+            }
+        }
         set_score(self);
         */
         
