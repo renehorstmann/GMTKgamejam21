@@ -21,16 +21,13 @@ struct uFetch {
 };
 
 static void ems_fetch_success(emscripten_fetch_t *fetch) {
-    log_trace("u_fetch succeded");
+    log_trace("u_fetch succeded with http code: %i", fetch->status);
     uFetch *self = fetch->userData;
     assume(self->fetch == fetch, "wtf");
 
     self->data.size = 0;
     string_append(&self->data, (Str_s) {(char*) fetch->data, fetch->numBytes});
-    self->error = fetch->status==200;
-    if(self->error) {
-        string_kill(&self->data);
-    }
+    self->error = false;
     
     emscripten_fetch_close(self->fetch);
     self->fetch = NULL;
@@ -46,7 +43,7 @@ static void ems_fetch_error(emscripten_fetch_t *fetch) {
     assume(self->fetch == fetch, "wtf");
     
     string_kill(&self->data);
-    self->error = false;
+    self->error = true;
     
     emscripten_fetch_close(self->fetch);
     self->fetch = NULL;
