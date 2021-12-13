@@ -47,12 +47,9 @@ static void firstname_generate(char *out_name) {
             "Magic",
             "Hello",
             "Great",
-            "dumb ",
-            "idiot",
             "asi ",
             "Alpha",
             "blue ",
-            "black",
             "red ",
             "fun ",
             "nice ",
@@ -62,7 +59,8 @@ static void firstname_generate(char *out_name) {
             "cool ",
             "COOL ",
             "Baby ",
-            "",
+            "Star ",
+            "sexy ",
             "",
             ""
     };
