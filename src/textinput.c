@@ -39,13 +39,13 @@ static const char layout_alt[4][10] = {
         "CCSSSSSSOO"
 };
 
-void set_key_pos(TextInput *self, mat4 *pose, int col, int row, int cols, float y_offset) {
+void set_key_pos(TextInput *self, mat4 *pose, int col, int row, int cols, float x_offset, float y_offset) {
     float width = self->L.cam.width - 16;
     width = sca_min(width, MAX_WIDTH);
 
     float x = 8 - width / 2 + width * col / KEY_COLS + (cols - 1) * 8;
     float y = self->L.cam.bottom + 12 + 18 * (KEY_ROWS - row - 1) + y_offset + (row != 3) * 4;
-    u_pose_set_xy(pose, (int) x, (int) y);
+    u_pose_set_xy(pose, ((int) x) + x_offset, (int) y);
 }
 
 static char get_key_char(const TextInput *self, int idx) {
@@ -299,8 +299,8 @@ void textinput_update(TextInput *self, ivec2 window_size, float dtime) {
 
             bool pressed = button_is_pressed(&self->L.keys.rects[idx]);
 
-            set_key_pos(self, &self->L.keys.rects[idx].pose, c, r, 1, 0);
-            set_key_pos(self, &self->L.chars.rects[idx].pose, c, pressed ? 0 : r, 1, pressed ? 16 : 1);
+            set_key_pos(self, &self->L.keys.rects[idx].pose, c, r, 1, 0, 0);
+            set_key_pos(self, &self->L.chars.rects[idx].pose, c, pressed ? 0 : r, 1, 0.5, pressed ? 16 : 1);
             self->L.chars.rects[idx].color = pressed ? R_COLOR_WHITE : R_COLOR_BLACK;
 
             self->L.textfield.sprite_fn(&self->L.chars.rects[idx].sprite, key);
@@ -310,17 +310,17 @@ void textinput_update(TextInput *self, ivec2 window_size, float dtime) {
     }
 
     self->L.shift.rect.sprite.y = self->L.shiftstate;
-    set_key_pos(self, &self->L.shift.rect.pose, 0, 2, 1, 0);
-    set_key_pos(self, &self->L.space.rect.pose, 2, 3, 6, 0);
+    set_key_pos(self, &self->L.shift.rect.pose, 0, 2, 1, 0, 0);
+    set_key_pos(self, &self->L.space.rect.pose, 2, 3, 6, 0,  0);
 
     // ok, cancel, backspace
     if(self->in.ok_active) {
-        set_key_pos(self, &self->L.special.rects[0].pose, 8, 3, 2, 0);
+        set_key_pos(self, &self->L.special.rects[0].pose, 8, 3, 2, 0, 0);
     } else {
         u_pose_set_xy(&self->L.special.rects[0].pose, FLT_MAX, FLT_MAX);
     }
-    set_key_pos(self, &self->L.special.rects[1].pose, 0, 3, 2, 0);
-    set_key_pos(self, &self->L.special.rects[2].pose, 8, 2, 2, 0);
+    set_key_pos(self, &self->L.special.rects[1].pose, 0, 3, 2, 0, 0);
+    set_key_pos(self, &self->L.special.rects[2].pose, 8, 2, 2, 0, 0);
 
     self->L.bg.rect.pose = u_pose_new_aa(
             self->L.cam.left, self->L.cam.top,
