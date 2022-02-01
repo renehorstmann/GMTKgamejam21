@@ -94,7 +94,7 @@ static void render(eSimple *simple, ivec2 window_size, float dtime) {
 }
 
 int main(int argc, char **argv) {
-    e_simple_start("Swarm GMTK21", "Horsimann",
+    e_simple_start("Swarm", "Horsimann",
                    1.0f,   // startup block time (the time in which "Horsimann" is displayed at startup)
                    UPDATES_PER_SECOND,
                    init, update, render);

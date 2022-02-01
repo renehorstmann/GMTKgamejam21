@@ -48,6 +48,7 @@ Feed *feed_new(Sound *sound, PixelParticles *particles) {
     self->particles_ref = particles;
 
     self->L.ro = ro_batch_new(FEED_MAX, r_texture_new_file(1, 4, "res/food.png"));
+    r_texture_wrap_repeat(self->L.ro.tex);
 
     for (int i = 0; i < FEED_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();

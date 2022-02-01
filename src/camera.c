@@ -85,10 +85,15 @@ void camera_update(Camera_s *self, ivec2 window_size) {
         camera_matrices_update(&self->matrices_background[i], self);
     camera_matrices_update(&self->matrices_main, self);
 
-    self->RO.left = cam_left;
-    self->RO.right = cam_right;
-    self->RO.top = cam_top;
-    self->RO.bottom = cam_bottom;
+    self->RO.screen_left = cam_left;
+    self->RO.screen_right = cam_right;
+    self->RO.screen_bottom = cam_bottom;
+    self->RO.screen_top = cam_top;
+
+    self->RO.left = sca_floor(self->RO.screen_left);
+    self->RO.right = sca_ceil(self->RO.screen_right);
+    self->RO.bottom = sca_floor(self->RO.screen_bottom);
+    self->RO.top = sca_ceil(self->RO.screen_top);
 
 }
 

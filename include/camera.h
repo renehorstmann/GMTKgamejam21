@@ -31,8 +31,16 @@ typedef struct {
 
 
     struct {
-        float scale; // units per pixel
-        float left, right, bottom, top;
+        // units per pixel
+        float scale;
+
+        // static camera borders in units
+        // bottom and right may be a little behind the actual screen border (depending on the real resolution)
+        int left, right, bottom, top;
+
+        // static camera borders in units
+        // bottom and right are on the actual screen borders
+        float screen_left, screen_right, screen_bottom, screen_top;
     } RO; // read only
 
 } Camera_s;

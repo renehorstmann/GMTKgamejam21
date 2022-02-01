@@ -99,6 +99,7 @@ Shark *shark_new(Sound *sound, PixelParticles *particles, Fish *fish) {
     self->fish_ref = fish;
 
     self->L.ro = ro_batch_new(SHARK_MAX, r_texture_new_file(4, 2, "res/shark.png"));
+    r_texture_wrap_repeat(self->L.ro.tex);
 
     for (int i = 0; i < SHARK_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();

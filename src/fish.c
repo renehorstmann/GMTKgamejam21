@@ -255,6 +255,7 @@ Fish *fish_new(eInput *input, const Camera_s *cam, Sound *sound, PixelParticles 
     self->L.move.ring_ro.rect.pose = u_pose_new_hidden();
 
     self->L.ro = ro_batch_new(FISH_MAX, r_texture_new_file(4, 2, "res/fish.png"));
+    r_texture_wrap_repeat(self->L.ro.tex);
 
     for (int i = 0; i < FISH_MAX; i++) {
         self->L.ro.rects[i].pose = u_pose_new_hidden();

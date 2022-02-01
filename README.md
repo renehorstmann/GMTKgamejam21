@@ -20,51 +20,34 @@ The default will use your local running Highscoreserver (http://127.0.0.1:1000/a
 ## Compiling for Web
 
 Using Emscripten:
-```sh
-mkdir web && cd web
-```
 
 ```sh
-emcc -I../include/ -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s FULL_ES3=1 -s EXPORTED_FUNCTIONS='["_main", "_e_io_idbfs_synced"]' -s SDL2_IMAGE_FORMATS='["png"]'  --preload-file ../res -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s EXIT_RUNTIME=1 -s FETCH=1 -lidbfs.js -DOPTION_GLES -DOPTION_SDL -DOPTION_FETCH ../src/e/*.c ../src/p/*.c ../src/r/*.c ../src/u/*.c ../src/*.c -o index.html
+mkdir web && cp index.html web && cp icon/* web && cd web
 ```
 
-Copy the icons into the webpage
-
-````shell
-cp ../icon/* .
-````
-
-Add the following changes to the generated index.html (into the head...):
-
-```html
-
-<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-<link rel="apple-touch-icon" href="icon180.png">
-<link rel="shortcut icon" href="icon196.png" sizes="196x196">
-
-<style>
-    #canvas {
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        margin: 0px;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        display: block;
-    }
-</style>
-<script>
-    function set_error_img() {
-        var newContent = '<!DOCTYPE html><html><body style="background-color:black;"><h1 style="color:white;">Potato Browsers are not supported!</h1><p style="color:silver;">Full WebGL2.0 is needed!</p></body></html>';
-        document.open();
-        document.write(newContent);
-        document.close();
-    }
-</script>
+```sh
+cp -r ../res .
 ```
-This will let Emscripten run in fullscreen and display an error text, if the app / game is not able to run (WebGL2.0 support missing)
 
+```sh
+emcc -O3 \
+-I../include/ \
+-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s FULL_ES3=1 -s \
+EXPORTED_FUNCTIONS='["_main", "_e_io_idbfs_synced", "_e_io_file_upload_done"]' \
+-s EXPORTED_RUNTIME_METHODS=FS \
+-s SDL2_IMAGE_FORMATS='["png"]' \
+--preload-file ./res \
+-s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY=1 -s EXIT_RUNTIME=1 -s FETCH=1 \
+-lidbfs.js \
+-DOPTION_GLES -DOPTION_SDL -DOPTION_FETCH \
+../src/e/*.c ../src/p/*.c ../src/r/*.c ../src/u/*.c ../src/*.c \
+-o index.js
+```
+
+test the website:
+```sh
+python3 -m http.server --bind localhost  # [port]
+```
 
 ## Author
 René Horstmann
