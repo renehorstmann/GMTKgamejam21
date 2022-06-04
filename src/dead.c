@@ -106,7 +106,7 @@ void dead_update(Dead *self, float dtime) {
 
     self->L.btn.rect.pose = u_pose_new(0, -20-64, 64, 64);
 
-    self->L.credits.pose = u_pose_new_aa(
+    self->L.credits.pose = u_pose_new(
             self->cam_ref->RO.left + 10, 
             self->cam_ref->RO.bottom + 16, 
             1, 1);

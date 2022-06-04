@@ -84,7 +84,7 @@ Login *login_new(eInput *input, const Camera_s *cam) {
     // poses
     self->L.title.pose = u_pose_new(-80, 80, 4, 4);
     self->L.yourname.pose = u_pose_new(-60, 40, 2, 2);
-    self->L.name.pose = u_pose_new(-60, 10, 1.5, 1.5);
+    self->L.name.pose = u_pose_new(-60, 10, 1, 1);
 
     // box around yourname and name text fields
     self->L.name_click_box = u_pose_new_aa(-60, 40,

@@ -20,8 +20,6 @@
 #endif
 
 
-#define CAM_SIZE_FACTOR (240.0f/180.0f)
-
 
 static const vec4 SCORE_COLOR = {{1, 1, 1, 0.8}};
 static const vec4 SCORE_OWN_COLOR = {{0.0, 1.0, 0.5, 1.0}};
@@ -192,10 +190,10 @@ void showscore_update(ShowScore *self, float dtime) {
     
     
     // set poses
-    self->L.title.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y, 
+    self->L.title.pose = u_pose_new(self->in.pos.x, self->in.pos.y,
             2, 2);
-    self->L.score.pose = u_pose_new_aa(self->in.pos.x, self->in.pos.y - 18, 
-            1*CAM_SIZE_FACTOR, 1*CAM_SIZE_FACTOR);
+    self->L.score.pose = u_pose_new(self->in.pos.x, self->in.pos.y - 18,
+            1, 1);
     
     
     Highscore *h = self->L.highscore;
